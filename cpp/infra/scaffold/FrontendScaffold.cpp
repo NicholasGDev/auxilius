@@ -1,6 +1,9 @@
 #include "Scaffold.hpp"
 #include "../../shared/FileSystem.hpp"
+#include <algorithm>
+#include <cctype>
 #include <string>
+#include <vector>
 
 namespace Infra {
 
@@ -8,10 +11,29 @@ using Shared::writeFile;
 using Shared::mkdirs;
 namespace fs = std::filesystem;
 
+static std::string toLower(const std::string& s)
+{
+    std::string r = s;
+    std::transform(r.begin(), r.end(), r.begin(),
+        [](unsigned char c) { return std::tolower(c); });
+    return r;
+}
+
 void generateFrontendScaffold(const fs::path& root)
 {
     const fs::path r   = root / "front";
     const fs::path src = r / "src";
+
+    const std::vector<std::string> contexts = {
+        "Autenticacao", "Clientes", "Devolucoes", "Lojas",
+        "Mercadorias", "Promocoes", "Vendas", "Tesouraria", "Finalizadoras",
+        "Funcionarios", "Pdvs", "Combos", "Documentacao"
+    };
+
+    // Sub-pages per context (matching Treasury pattern)
+    const std::vector<std::string> subPages = {
+        "Consultar", "Criar", "Detalhar"
+    };
 
     mkdirs({
         src / "app",
@@ -19,15 +41,73 @@ void generateFrontendScaffold(const fs::path& root)
         src / "components" / "layout",
         src / "hooks",
         src / "layouts",
-        src / "pages" / "Dashboard" / "components",
-        src / "pages" / "Vendas" / "components",
-        src / "pages" / "Tesouraria" / "components",
         src / "routes",
         src / "store" / "slices",
         src / "styles",
         src / "types",
         src / "utils",
     });
+
+    for (const auto& ctx : contexts) {
+        const fs::path pageDir = src / "app" / "pages" / ctx;
+        fs::create_directories(pageDir);
+        for (const auto& sub : subPages)
+            fs::create_directories(pageDir / sub);
+    }
+
+    // ── Per-context page files ────────────────────────────────────────────────
+    for (const auto& ctx : contexts) {
+        const fs::path pageDir = src / "app" / "pages" / ctx;
+        const std::string ctxLower = toLower(ctx);
+
+        // Root index.tsx
+        writeFile(pageDir / "index.tsx",
+            "import React from 'react';\n"
+            "import styles from './index.module.scss';\n\n"
+            "const " + ctx + "Page: React.FC = () => (\n"
+            "  <div className={styles.page}>\n"
+            "    <h1>" + ctx + "</h1>\n"
+            "  </div>\n"
+            ");\n\n"
+            "export default " + ctx + "Page;\n");
+
+        // Root index.module.scss
+        writeFile(pageDir / "index.module.scss",
+            ".page {\n  padding: 1.5rem;\n}\n");
+
+        // Routes file
+        std::string routesImports = "import " + ctx + "Page from '.';\n";
+        std::string routesArr;
+        for (const auto& sub : subPages) {
+            const std::string subLower = toLower(sub);
+            routesImports += "import " + sub + ctx + " from './" + sub + "';\n";
+            routesArr += "  { path: '/" + ctxLower + "/" + subLower + "', component: " + sub + ctx + ", permission: '" + ctxLower + "/" + subLower + "' },\n";
+        }
+        writeFile(pageDir / (ctxLower + ".routes.ts"),
+            routesImports + "\nexport const " + ctxLower + "Routes = [\n"
+            "  { path: '/" + ctxLower + "', component: " + ctx + "Page, permission: '" + ctxLower + "' },\n"
+            + routesArr + "];\n");
+
+        // Sub-pages
+        for (const auto& sub : subPages) {
+            const fs::path subDir = pageDir / sub;
+
+            writeFile(subDir / "index.tsx",
+                "import React from 'react';\n"
+                "import styles from './index.module.scss';\n\n"
+                "const " + sub + ctx + ": React.FC = () => (\n"
+                "  <div className={styles.page}>\n"
+                "    <h2>" + sub + " — " + ctx + "</h2>\n"
+                "  </div>\n"
+                ");\n\n"
+                "export default " + sub + ctx + ";\n");
+
+            writeFile(subDir / "index.module.scss",
+                ".page {\n  padding: 1.5rem;\n}\n");
+        }
+    }
+
+    // ── Project config files ──────────────────────────────────────────────────
 
     writeFile(r / "package.json", R"({
   "name": "zeus-retail-front",
@@ -134,23 +214,16 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 )");
 
     writeFile(src / "app" / "App.tsx", R"(import React from 'react';
-import { AppRoutes } from '../routes';
-
-const App: React.FC = () => <AppRoutes />;
-export default App;
-)");
-
-    writeFile(src / "routes" / "index.tsx", R"(import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { DashboardPage } from '../pages/Dashboard';
 
-export const AppRoutes: React.FC = () => (
+const App: React.FC = () => (
   <BrowserRouter>
     <Routes>
-      <Route path="/" element={<DashboardPage />} />
+      <Route path="/" element={<div>Zeus Retail Evolution</div>} />
     </Routes>
   </BrowserRouter>
 );
+export default App;
 )");
 
     writeFile(src / "store" / "index.ts", R"(import { configureStore } from '@reduxjs/toolkit';
@@ -173,29 +246,6 @@ export const HeaderGlobal: React.FC = () => (
     <h2>Zeus Retail Evolution</h2>
     <Button variant="filled">PDV Online</Button>
   </header>
-);
-)");
-
-    writeFile(src / "pages" / "Dashboard" / "index.tsx", R"(import React from 'react';
-import { DashboardCard } from './components/DashboardCard';
-
-export const DashboardPage: React.FC = () => (
-  <div className="dashboard-page">
-    <h1>Dashboard — Zeus Retail</h1>
-    <DashboardCard title="Vendas do Dia" value="R$ 12.450,00" />
-  </div>
-);
-)");
-
-    writeFile(src / "pages" / "Dashboard" / "components" / "DashboardCard.tsx", R"(import React from 'react';
-
-interface Props { title: string; value: string; }
-
-export const DashboardCard: React.FC<Props> = ({ title, value }) => (
-  <div className="dashboard-card">
-    <h3>{title}</h3>
-    <p>{value}</p>
-  </div>
 );
 )");
 }

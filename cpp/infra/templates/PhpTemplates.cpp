@@ -123,7 +123,7 @@ std::string PhpTemplates::tplUseCase(const EndpointConfig& cfg)
         return "<?php\n\ndeclare(strict_types=1);\n\n"
                "namespace " + ctxNs + "\\Application\\UseCases;\n\n"
                "use " + ctxNs + "\\Application\\DTOs\\Inputs\\" + action + res + "Input;\n"
-               "use " + ctxNs + "\\Application\\Exceptions\\" + res + "Exception;\n"
+               "use " + ctxNs + "\\Application\\Exceptions\\" + cfg.context + "Exception;\n"
                "use " + ctxNs + "\\Domain\\Entities\\" + res + "Entity;\n"
                "use " + ctxNs + "\\Infra\\Persistence\\Repositories\\" + res + "Repository;\n"
                "use " + sharedNs + "\\Domain\\VOs\\IdVO;\n\n"
@@ -146,7 +146,7 @@ std::string PhpTemplates::tplUseCase(const EndpointConfig& cfg)
                "namespace " + ctxNs + "\\Application\\UseCases;\n\n"
                "use " + ctxNs + "\\Application\\DTOs\\Inputs\\" + action + res + "Input;\n"
                "use " + ctxNs + "\\Application\\Errors\\" + res + "NaoEncontradoError;\n"
-               "use " + ctxNs + "\\Application\\Exceptions\\" + res + "Exception;\n"
+               "use " + ctxNs + "\\Application\\Exceptions\\" + cfg.context + "Exception;\n"
                "use " + ctxNs + "\\Domain\\Entities\\" + res + "Entity;\n"
                "use " + ctxNs + "\\Infra\\Persistence\\Repositories\\" + res + "Repository;\n"
                "use " + sharedNs + "\\Domain\\VOs\\IdVO;\n\n"
@@ -157,7 +157,7 @@ std::string PhpTemplates::tplUseCase(const EndpointConfig& cfg)
                "    public function executar(IdVO $id, " + action + res + "Input $input): void\n    {\n"
                "        $registro = $this->" + repoVar + "->obterPorId($id);\n"
                "        if (!$registro) {\n"
-               "            throw new " + res + "Exception(new " + res + "NaoEncontradoError());\n"
+               "            throw new " + cfg.context + "Exception(new " + res + "NaoEncontradoError());\n"
                "        }\n\n"
                "        $entity = " + res + "Entity::update(\n            id: $id,\n" + entityFields +
                "        );\n\n        $this->" + repoVar + "->alterar($entity);\n"
@@ -168,7 +168,7 @@ std::string PhpTemplates::tplUseCase(const EndpointConfig& cfg)
     return "<?php\n\ndeclare(strict_types=1);\n\n"
            "namespace " + ctxNs + "\\Application\\UseCases;\n\n"
            "use " + ctxNs + "\\Application\\Errors\\" + res + "NaoEncontradoError;\n"
-           "use " + ctxNs + "\\Application\\Exceptions\\" + res + "Exception;\n"
+           "use " + ctxNs + "\\Application\\Exceptions\\" + cfg.context + "Exception;\n"
            "use " + ctxNs + "\\Infra\\Persistence\\Repositories\\" + res + "Repository;\n"
            "use " + sharedNs + "\\Domain\\VOs\\IdVO;\n\n"
            "class " + action + res + "UseCase\n{\n"
@@ -178,7 +178,7 @@ std::string PhpTemplates::tplUseCase(const EndpointConfig& cfg)
            "    public function executar(IdVO $id): void\n    {\n"
            "        $registro = $this->" + repoVar + "->obterPorId($id);\n"
            "        if (!$registro) {\n"
-           "            throw new " + res + "Exception(new " + res + "NaoEncontradoError());\n"
+           "            throw new " + cfg.context + "Exception(new " + res + "NaoEncontradoError());\n"
            "        }\n\n        $this->" + repoVar + "->deletar($id);\n"
            "    }\n}\n";
 }
@@ -232,7 +232,7 @@ std::string PhpTemplates::tplQuery(const EndpointConfig& cfg)
            "namespace " + ctxNs + "\\Application\\Queries;\n\n"
            "use " + ctxNs + "\\Application\\DTOs\\Outputs\\Detalhar" + res + "Output;\n"
            "use " + ctxNs + "\\Application\\Errors\\" + res + "NaoEncontradoError;\n"
-           "use " + ctxNs + "\\Application\\Exceptions\\" + res + "Exception;\n"
+           "use " + ctxNs + "\\Application\\Exceptions\\" + cfg.context + "Exception;\n"
            "use " + ctxNs + "\\Infra\\Persistence\\Repositories\\" + res + "Repository;\n"
            "use " + sharedNs + "\\Domain\\VOs\\IdVO;\n\n"
            "class Detalhar" + res + "Query\n{\n"
@@ -242,7 +242,7 @@ std::string PhpTemplates::tplQuery(const EndpointConfig& cfg)
            "    public function executar(IdVO $id): Detalhar" + res + "Output\n    {\n"
            "        $registro = $this->" + repoVar + "->obterPorId($id);\n"
            "        if (!$registro) {\n"
-           "            throw new " + res + "Exception(new " + res + "NaoEncontradoError());\n"
+           "            throw new " + cfg.context + "Exception(new " + res + "NaoEncontradoError());\n"
            "        }\n\n"
            "        return new Detalhar" + res + "Output(\n"
            "            id: new IdVO($registro->id),\n" + ctorArgs +
@@ -390,9 +390,14 @@ std::vector<GeneratedFile> PhpTemplates::buildFiles(const EndpointConfig& cfg)
         files.push_back(uc);
     }
 
-    auto exc = makeFile("Application/Exceptions/" + res + "Exception.php");
-    exc.content = tplException(cfg);
-    files.push_back(exc);
+    auto exc = makeFile("Application/Exceptions/" + cfg.context + "Exception.php");
+    if (exc.isNew) {
+        // One exception class per context (e.g. TesourariaException)
+        EndpointConfig ctxCfg = cfg;
+        ctxCfg.resource = cfg.context;
+        exc.content = tplException(ctxCfg);
+        files.push_back(exc);
+    }
 
     auto err = makeFile("Application/Errors/" + res + "NaoEncontradoError.php");
     err.content = tplError(cfg);

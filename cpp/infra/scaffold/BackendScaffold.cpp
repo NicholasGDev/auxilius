@@ -1,5 +1,7 @@
 #include "Scaffold.hpp"
 #include "../../shared/FileSystem.hpp"
+#include <algorithm>
+#include <cctype>
 #include <string>
 #include <vector>
 
@@ -8,6 +10,14 @@ namespace Infra {
 using Shared::writeFile;
 using Shared::mkdirs;
 namespace fs = std::filesystem;
+
+static std::string toLower(const std::string& s)
+{
+    std::string r = s;
+    std::transform(r.begin(), r.end(), r.begin(),
+        [](unsigned char c) { return std::tolower(c); });
+    return r;
+}
 
 void generateBackendScaffold(const fs::path& root)
 {
@@ -41,23 +51,35 @@ void generateBackendScaffold(const fs::path& root)
             c / "Infra" / "Providers",
         });
 
+        const std::string ctxLower = toLower(ctx);
+
         writeFile(c / "Infra" / "Providers" / (ctx + "ServiceProvider.php"),
             "<?php\n\ndeclare(strict_types=1);\n\n"
             "namespace App\\Contexts\\" + ctx + "\\Infra\\Providers;\n\n"
             "use App\\Contexts\\Compartilhado\\Base\\Infra\\Providers\\CompartilhadoServiceProvider;\n"
-            "use Illuminate\\Foundation\\Application;\n\n"
+            "use Illuminate\\Contracts\\Foundation\\Application;\n\n"
             "class " + ctx + "ServiceProvider extends CompartilhadoServiceProvider\n{\n"
             "    public function __construct(Application $app)\n    {\n"
             "        parent::__construct($app);\n"
-            "        $this->setPrefix('" + ctx + "');\n"
-            "        $this->setName('" + ctx + "');\n"
+            "        $this->setPrefix('" + ctxLower + "');\n"
+            "        $this->setName('" + ctxLower + "');\n"
             "        $this->setRoute(__DIR__ . '/../Presentation/Routes/api.php');\n"
+            "    }\n\n"
+            "    public function boot(): void\n    {\n"
+            "        parent::boot();\n"
             "    }\n}\n");
 
         writeFile(c / "Infra" / "Presentation" / "Routes" / "api.php",
             "<?php\n\ndeclare(strict_types=1);\n\n"
+            "use App\\Contexts\\" + ctx + "\\Infra\\Presentation\\Http\\Controllers\\" + ctx + "Controller;\n"
             "use Illuminate\\Support\\Facades\\Route;\n\n"
-            "Route::get('/consultar', fn() => response()->json(['status' => 'OK', 'context' => '" + ctx + "']));\n");
+            "Route::middleware('permissao.contexto:" + ctxLower + "')->group(function () {\n"
+            "    Route::get('/consultar', [" + ctx + "Controller::class, 'consultar'])->name('consultar');\n"
+            "    Route::get('/detalhar/{id}', [" + ctx + "Controller::class, 'detalhar'])->name('detalhar');\n"
+            "    Route::post('/criar', [" + ctx + "Controller::class, 'criar'])->name('criar');\n"
+            "    Route::put('/alterar/{id}', [" + ctx + "Controller::class, 'alterar'])->name('alterar');\n"
+            "    Route::delete('/deletar/{id}', [" + ctx + "Controller::class, 'deletar'])->name('deletar');\n"
+            "});\n");
     }
 
     std::string providers = "<?php\n\nreturn [\n";
