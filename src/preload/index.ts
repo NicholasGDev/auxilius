@@ -24,7 +24,12 @@ const auxilius = {
     listContexts: (projectPath: string) => ipcRenderer.invoke('endpoints:list-contexts', projectPath),
     preview:      (cfg: unknown)        => ipcRenderer.invoke('endpoints:preview', cfg),
     generate:     (cfg: unknown)        => ipcRenderer.invoke('endpoints:generate', cfg),
-  }
+  },
+  db: {
+    get:  (key: string)                => ipcRenderer.invoke('db:get',  key)                as Promise<{key:string;value:string}>,
+    set:  (key: string, value: string) => ipcRenderer.invoke('db:set',  key, value)         as Promise<{ok:boolean}>,
+    list: ()                           => ipcRenderer.invoke('db:list')                     as Promise<Array<{key:string;value:string}>>,
+  },
 }
 
 contextBridge.exposeInMainWorld('auxilius', auxilius)

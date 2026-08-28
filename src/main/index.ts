@@ -4,6 +4,7 @@ import { readdirSync } from 'fs'
 import { registerScaffoldHandlers } from './ipc/scaffold'
 import { registerEnvironmentHandlers } from './ipc/environment'
 import { registerEndpointHandlers } from './ipc/endpoints'
+import { registerDatabaseHandlers } from './ipc/database'
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -37,6 +38,7 @@ app.whenReady().then(() => {
   registerScaffoldHandlers()
   registerEnvironmentHandlers()
   registerEndpointHandlers()
+  registerDatabaseHandlers()
 
   ipcMain.handle('dialog:open-directory', async () => {
     const win = BrowserWindow.getFocusedWindow()

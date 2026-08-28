@@ -10,7 +10,8 @@
     "package": "electron-vite build && electron-builder",
     "docker:dev": "bash scripts/docker-dev.sh",
     "docker:cpp": "bash scripts/docker-build.sh",
-    "cpp:compile": "mkdir -p bin && g++ -std=c++20 -O2 cpp/main.cpp cpp/application/ScaffoldUseCase.cpp cpp/application/EndpointUseCase.cpp cpp/application/EnvironmentUseCase.cpp cpp/infra/templates/PhpTemplates.cpp cpp/infra/scaffold/BackendScaffold.cpp cpp/infra/scaffold/FrontendScaffold.cpp cpp/infra/scaffold/ElectronScaffold.cpp cpp/infra/environment/Environment.cpp -Icpp -o bin/scaffold_zeus"
+    "cpp:compile": "mkdir -p bin && g++ -std=c++20 -O2 cpp/main.cpp cpp/application/ScaffoldUseCase.cpp cpp/application/EndpointUseCase.cpp cpp/application/EnvironmentUseCase.cpp cpp/infra/templates/PhpTemplates.cpp cpp/infra/scaffold/BackendScaffold.cpp cpp/infra/scaffold/FrontendScaffold.cpp cpp/infra/scaffold/ElectronScaffold.cpp cpp/infra/environment/Environment.cpp cpp/infra/database/Database.cpp -Icpp -lsqlite3 -o bin/scaffold_zeus",
+    "install:universal": "bash scripts/install.sh"
   },
   "dependencies": {
     "@giro-ds/react": "^9.0.0",
@@ -36,11 +37,20 @@
     "appId": "com.zanthus.auxilius",
     "productName": "Auxilius",
     "linux": {
-      "target": ["AppImage", "deb"]
+      "target": [
+        "AppImage",
+        "deb"
+      ]
     },
     "extraResources": [
-      { "from": "bin/scaffold_zeus", "to": "scaffold_zeus" },
-      { "from": "cpp", "to": "cpp" }
+      {
+        "from": "bin/scaffold_zeus",
+        "to": "scaffold_zeus"
+      },
+      {
+        "from": "cpp",
+        "to": "cpp"
+      }
     ]
   }
 }

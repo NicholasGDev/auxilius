@@ -12,6 +12,7 @@
 #include "application/EndpointUseCase.hpp"
 #include "application/EnvironmentUseCase.hpp"
 #include "domain/Field.hpp"
+#include "infra/database/Database.hpp"
 #include <algorithm>
 #include <cctype>
 #include <cstdlib>
@@ -179,6 +180,35 @@ int main(int argc, char* argv[])
 
         } else {
             std::cerr << "{\"error\":\"subcomando desconhecido: " + sub + "\"}\n";
+            return 1;
+        }
+        return 0;
+    }
+
+    // ── db ────────────────────────────────────────────────────────────────────
+    if (cmd == "db") {
+        if (argc < 3) {
+            std::cerr << "{\"error\":\"subcomando db: get <key> | set <key> <value> | list\"}\n";
+            return 1;
+        }
+        const std::string sub = argv[2];
+        auto& db = Infra::Database::instance();
+
+        if (sub == "get") {
+            if (argc < 4) { std::cerr << "{\"error\":\"db get requer <key>\"}\n"; return 1; }
+            const std::string val = db.get(argv[3]);
+            std::cout << "{\"key\":\"" << argv[3] << "\",\"value\":\"" << val << "\"}\n";
+
+        } else if (sub == "set") {
+            if (argc < 5) { std::cerr << "{\"error\":\"db set requer <key> <value>\"}\n"; return 1; }
+            db.set(argv[3], argv[4]);
+            std::cout << "{\"ok\":true,\"key\":\"" << argv[3] << "\"}\n";
+
+        } else if (sub == "list") {
+            std::cout << db.listJson() << "\n";
+
+        } else {
+            std::cerr << "{\"error\":\"subcomando db desconhecido: " + sub + "\"}\n";
             return 1;
         }
         return 0;

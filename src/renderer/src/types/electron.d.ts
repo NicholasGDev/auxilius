@@ -71,6 +71,11 @@ declare global {
         preview(cfg: EndpointConfig):       Promise<PreviewResult>
         generate(cfg: EndpointConfig):      Promise<GenerateResult>
       }
+      db: {
+        get(key: string):                   Promise<{ key: string; value: string }>
+        set(key: string, value: string):    Promise<{ ok: boolean; key: string }>
+        list():                             Promise<Array<{ key: string; value: string }>>
+      }
     }
   }
 }

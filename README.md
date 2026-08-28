@@ -1,6 +1,8 @@
 # Auxilius — Zeus Retail Evolution Developer Toolbox
 
-> Desktop app (Electron + React + Giro DS) powered by a C++ CLI engine using DDD architecture.
+> Desktop app (Electron + React + Giro DS) powered by a C++ CLI engine using DDD architecture.  
+> Layout inspirado no VS Code — Activity Bar, Explorer, File Tree, Tab Bar, Status Bar.  
+> Persiste configurações em SQLite via binário C++. Sem Docker necessário.
 
 ---
 
@@ -20,53 +22,66 @@ auxilius/
 │   │   ├── EndpointUseCase.*   # Endpoint preview/generate (outputs JSON)
 │   │   └── EnvironmentUseCase.*# Environment check/setup orchestration
 │   ├── infra/
+│   │   ├── database/
+│   │   │   ├── Database.hpp    # SQLite wrapper (~/.auxilius/auxilius.db)
+│   │   │   └── Database.cpp    # set / get / list — key-value store
 │   │   ├── scaffold/
 │   │   │   ├── Scaffold.hpp
-│   │   │   ├── BackendScaffold.cpp   # Laravel DDD: 14 contexts + routes
-│   │   │   ├── FrontendScaffold.cpp  # React + Giro DS scaffold
+│   │   │   ├── BackendScaffold.cpp   # Laravel DDD: 14 contexts + middleware routes
+│   │   │   ├── FrontendScaffold.cpp  # React + Giro DS: per-context sub-pages
 │   │   │   └── ElectronScaffold.cpp  # Electron-vite scaffold
 │   │   ├── templates/
 │   │   │   ├── PhpTemplates.hpp      # All PHP DDD artifact templates
 │   │   │   └── PhpTemplates.cpp      # InputDTO, UseCase, Query, Entity, Repository…
 │   │   └── environment/
-│   │       ├── Environment.hpp       # Environment checks + setup declarations
+│   │       ├── Environment.hpp
 │   │       └── Environment.cpp       # git, nvm, node20, WSL, project checks
 │   ├── main.cpp                # CLI entry point
-│   └── CMakeLists.txt          # CMake build config
+│   └── CMakeLists.txt
 ├── src/
-│   ├── main/                   # Electron main process (Node16 TypeScript)
+│   ├── main/                   # Electron main process
 │   │   ├── index.ts
 │   │   └── ipc/
-│   │       ├── scaffold.ts     # IPC → C++ scaffold commands
-│   │       ├── endpoints.ts    # IPC → C++ endpoint preview/generate
-│   │       └── environment.ts  # IPC → C++ environment commands
+│   │       ├── scaffold.ts
+│   │       ├── endpoints.ts
+│   │       ├── environment.ts
+│   │       └── database.ts     # IPC ↔ C++ db get/set/list
 │   ├── preload/
-│   │   └── index.ts            # contextBridge: exposes window.auxilius
-│   └── renderer/src/           # React app (ESNext + bundler resolution)
+│   │   └── index.ts            # contextBridge: window.auxilius (+ db namespace)
+│   └── renderer/src/
 │       ├── pages/
-│       │   ├── Welcome/        # Welcome page: new/existing project selection
-│       │   ├── Home/           # Dashboard: environment status
-│       │   ├── Setup/          # Environment setup actions
-│       │   ├── Scaffold/       # Run scaffold generator
-│       │   └── Endpoints/      # Endpoint generator + VSCode-like file preview
+│       │   ├── Welcome/        # Welcome: selecionar projeto (path salvo no SQLite)
+│       │   ├── Home/           # Dashboard: status do ambiente
+│       │   ├── Setup/          # Configurar ambiente
+│       │   ├── Scaffold/       # Gerar estrutura Zeus DDD
+│       │   └── Endpoints/      # Gerar artefatos PHP DDD (preview tipo VS Code)
 │       ├── components/
-│       │   ├── layout/MainLayout.tsx
-│       │   └── common/Sidebar.tsx
+│       │   └── layout/
+│       │       ├── MainLayout.tsx    # Shell VS Code (Activity Bar + Sidebar + Editor + Status Bar)
+│       │       ├── ActivityBar.tsx   # Barra lateral esquerda com ícones (48px)
+│       │       ├── FileTree.tsx      # Árvore de arquivos lazy-load
+│       │       ├── ExplorerPanel.tsx # Painel do explorador
+│       │       └── StatusBar.tsx     # Barra inferior (branch, projeto, versão)
 │       ├── contexts/
-│       │   └── ProjectContext.tsx  # Active project path context
-│       ├── routes/index.tsx
-│       ├── styles/global.scss
-│       └── App.tsx
+│       │   ├── ProjectContext.tsx    # Caminho do projeto ativo
+│       │   └── SettingsContext.tsx   # Configurações persistidas no SQLite via C++
+│       ├── styles/
+│       │   ├── global.scss           # Tokens, utilitários, tema escuro
+│       │   └── vscode-layout.scss    # Layout VS Code (shell, activity bar, sidebar, tabs)
+│       ├── types/
+│       │   └── electron.d.ts         # window.auxilius types (inclui db namespace)
+│       └── App.tsx                   # Restaura projectPath do SQLite no startup
 ├── scripts/
-│   └── docker-build.sh         # Builds C++ via Docker
+│   ├── install.sh              # Instalador universal (Linux/macOS) — sem Docker
+│   └── docker-build.sh         # Build C++ via Docker (opcional)
 ├── docs/
-│   └── IMPROVEMENTS.md         # Historical improvement notes
-├── Dockerfile                  # Multi-stage: g++12 → node20-slim → artifacts
-├── docker-compose.yml
+│   └── IMPROVEMENTS.md
+├── Dockerfile                  # Opcional — Multi-stage: g++12 → node20-slim
+├── docker-compose.yml          # Opcional
 ├── electron.vite.config.ts
-├── tsconfig.json               # Project references (files: [])
-├── tsconfig.node.json          # main + preload: Node16 resolution
-├── tsconfig.web.json           # renderer: bundler + ESNext resolution
+├── tsconfig.json
+├── tsconfig.node.json
+├── tsconfig.web.json
 └── package.json
 ```
 
@@ -74,75 +89,189 @@ auxilius/
 
 ## C++ CLI
 
-The `bin/scaffold_zeus` binary is the core engine. All generation logic lives in C++.
+O binário `bin/scaffold_zeus` é o motor central. Toda lógica de geração e persistência fica em C++.
 
 ```bash
-# Scaffold a new Zeus project
+# Scaffold completo do projeto Zeus
 scaffold_zeus scaffold /path/to/target
 
-# Preview endpoint files (outputs JSON)
+# Preview de arquivos de endpoint (retorna JSON)
 scaffold_zeus endpoint --context=Vendas --resource=Pedido \
   --operation=criar --fields=cliente:string,valor:decimal \
   --project=/path/to/zeus --preview
 
-# Generate endpoint files to disk
+# Gerar arquivos no disco
 scaffold_zeus endpoint ... --generate
 
-# Environment checks/setup
+# Verificações de ambiente
 scaffold_zeus env check
 scaffold_zeus env setup-wsl
 scaffold_zeus env setup-nvm
 scaffold_zeus env clone-project
 scaffold_zeus env git-config
+
+# Banco de dados SQLite (~/.auxilius/auxilius.db)
+scaffold_zeus db get projectPath
+scaffold_zeus db set projectPath /root/projects/zeus-retail-evolution
+scaffold_zeus db list
 ```
 
-**Fields format:** `name:type[?]` — append `?` for nullable.  
-Types: `string`, `decimal`, `int`, `bool`, `uuid`, `date`, `datetime`, or any VO name.
+**Formato de campos:** `nome:tipo[?]` — adicione `?` para nullable.  
+Tipos: `string`, `decimal`, `int`, `bool`, `uuid`, `date`, `datetime` ou qualquer nome de VO.
 
 ---
 
-## Build
+## Banco de Dados SQLite (C++)
 
-### Option 1 — Docker (recommended)
+As configurações são persistidas automaticamente em `~/.auxilius/auxilius.db` pelo binário C++.  
+Não é necessário nenhum módulo Node nativo — o Electron comunica com o banco via IPC → spawn do binário.
 
-```bash
-npm run cpp:build    # Builds C++ binary via docker-compose cpp-build service
+**Chaves persistidas:**
+| Chave             | Descrição                          |
+|-------------------|------------------------------------|
+| `projectPath`     | Caminho do projeto ativo           |
+| `lastContext`     | Último contexto usado nos endpoints |
+| `lastResource`    | Último resource usado              |
+| `lastOperation`   | Última operação (consultar/criar…) |
+| `lastFields`      | Últimos campos digitados           |
+| `gitName`         | Nome para git config               |
+| `gitEmail`        | Email para git config              |
+
+---
+
+## Layout VS Code
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Activity   │   Sidebar Panel    │    Editor Area            │
+│   Bar       │   (Explorer /      │  ┌──────────────────────┐│
+│  (48px)     │    Nav / Config)   │  │ Tabs: Home Setup …   ││
+│             │   (240px)          │  ├──────────────────────┤│
+│  📁 Explorer│                    │  │                      ││
+│  ◈ Scaffold │  EXPLORADOR        │  │   Conteúdo da página ││
+│  ⊕ Endpoints│  ├── back/         │  │                      ││
+│  ⚙ Ambiente │  │   └── app/      │  │                      ││
+│             │  └── front/        │  │                      ││
+│  ↕ Trocar   │      └── src/      │  └──────────────────────┘│
+├─────────────┴────────────────────┴──────────────────────────┤
+│ ⎇ main   📁 zeus-retail-evolution    SCAFFOLD   Auxilius v0.1│
+└─────────────────────────────────────────────────────────────┘
 ```
 
-### Option 2 — Direct g++ (requires g++ 12+ with C++20)
+---
 
-```bash
-npm run cpp:compile
+## Scaffold Gerado (baseado no projeto real zeus-retail-evolution)
+
+### Backend — Laravel DDD (`back/app/Contexts/[Nome]/`)
+Estrutura baseada em `/root/projects/zeus-retail-evolution/back/app/Contexts/Tesouraria`:
+```
+[Contexto]/
+├── Application/
+│   ├── DTOs/Inputs/          # readonly class — parâmetros tipados
+│   ├── DTOs/Outputs/         # simples (readonly) ou paginados (extends PaginacaoOutput)
+│   ├── Errors/               # extends BaseError (code HTTP + message)
+│   ├── Exceptions/           # [Contexto]Exception extends BaseException (1 por contexto)
+│   ├── Queries/              # GET: Controller → Query → Repository
+│   ├── Services/             # lógica complexa
+│   └── UseCases/             # POST/PUT/DELETE: Controller → UseCase → Entity → Repository
+├── Domain/
+│   ├── Entities/             # ::create() / ::update() — nunca new direto
+│   ├── Enums/
+│   ├── Filters/
+│   └── Autorizacoes/
+└── Infra/
+    ├── Persistence/Models/
+    ├── Persistence/Repositories/
+    ├── Presentation/Http/Controllers/
+    ├── Presentation/Http/Requests/
+    ├── Presentation/Routes/api.php    # Route::middleware('permissao.contexto:...')
+    └── Providers/[Nome]ServiceProvider.php
 ```
 
-### Run the Electron app
+### Frontend — React + Giro DS (`front/src/app/pages/[Contexto]/`)
+Estrutura baseada em `/root/projects/zeus-retail-evolution/front/src/app/pages/Treasury`:
+```
+[Contexto]/
+├── Consultar/
+│   ├── index.tsx
+│   └── index.module.scss
+├── Criar/
+│   ├── index.tsx
+│   └── index.module.scss
+├── Detalhar/
+│   ├── index.tsx
+│   └── index.module.scss
+├── index.tsx              # Página raiz (dashboard do contexto)
+├── index.module.scss
+└── [contexto].routes.ts   # Rotas do contexto
+```
+
+---
+
+## Instalação
+
+### Instalador Universal (recomendado)
 
 ```bash
+bash scripts/install.sh
+```
+
+O script detecta Linux/macOS e:
+1. Instala `g++`, `libsqlite3-dev`, `git`, `curl` (apt / brew)
+2. Instala `nvm` + Node.js 20 LTS
+3. Executa `npm install`
+4. Compila o binário C++ com `-lsqlite3`
+5. Cria atalho de desktop (Linux)
+
+### Manual
+
+```bash
+# Pré-requisitos: g++ 12+, libsqlite3-dev, Node 20+
 npm install
+npm run cpp:compile    # compila com -lsqlite3
 npm run dev
+```
+
+### Docker (opcional — apenas build do binário)
+
+```bash
+npm run cpp:build    # docker-compose cpp-build service
+```
+
+---
+
+## Desenvolvimento
+
+```bash
+npm run dev              # Electron + Vite dev server
+npm run cpp:compile      # Recompila binário C++ (inclui SQLite)
+npm run install:universal  # Instalador universal
 ```
 
 ---
 
 ## Tech Stack
 
-| Layer        | Technology                                  |
-|--------------|---------------------------------------------|
-| Desktop      | Electron 28, electron-vite 2                |
-| UI           | React 18, TypeScript 5, Giro DS 9           |
-| Styling      | SCSS, Giro DS tokens                        |
-| Engine       | C++20 (DDD), compiled to native binary      |
-| Build        | Docker (gcc:12), node:20-slim               |
-| IPC          | contextBridge + ipcMain.handle              |
+| Camada       | Tecnologia                                       |
+|--------------|--------------------------------------------------|
+| Desktop      | Electron 28, electron-vite 2                     |
+| UI           | React 18, TypeScript 5, Giro DS 9                |
+| Styling      | SCSS, Giro DS tokens, tema VS Code               |
+| Layout       | Activity Bar + File Tree + Tab Bar + Status Bar  |
+| Engine       | C++20 (DDD), compilado para binário nativo       |
+| Persistência | SQLite via C++ (`~/.auxilius/auxilius.db`)       |
+| Build        | g++ 12 + libsqlite3 (direto), Docker (opcional)  |
+| IPC          | contextBridge + ipcMain.handle → spawn C++       |
 
 ---
 
 ## Pages
 
-| Page            | Route        | Description                                      |
-|-----------------|--------------|--------------------------------------------------|
-| Welcome         | (root)       | Select new or existing Zeus project (WSL path)   |
-| Dashboard       | `/home`      | Environment status: git, nvm, node, WSL, project |
-| Ambiente        | `/setup`     | Run environment setup commands                   |
-| Scaffold        | `/scaffold`  | Generate complete Zeus project structure         |
-| Endpoints       | `/endpoints` | Generate PHP DDD artifacts (VSCode-like preview) |
+| Página          | Rota         | Descrição                                              |
+|-----------------|--------------|--------------------------------------------------------|
+| Welcome         | (raiz)       | Selecionar projeto (path restaurado do SQLite)         |
+| Dashboard       | `/home`      | Status do ambiente: git, nvm, node, WSL, projeto       |
+| Ambiente        | `/setup`     | Executar comandos de configuração do ambiente          |
+| Scaffold        | `/scaffold`  | Gerar estrutura completa do projeto Zeus DDD           |
+| Endpoints       | `/endpoints` | Gerar artefatos PHP DDD (preview tipo VS Code)         |
+
