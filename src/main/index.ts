@@ -30,6 +30,13 @@ function createWindow(): void {
 
   mainWindow.on('ready-to-show', () => mainWindow.show())
 
+  mainWindow.webContents.on('did-fail-load', (_e, code, desc) => {
+    console.error('Renderer failed to load:', code, desc)
+    mainWindow.webContents.openDevTools()
+  })
+
+  if (!isDev) mainWindow.webContents.openDevTools()
+
   if (isDev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
