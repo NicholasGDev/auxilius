@@ -82,7 +82,7 @@ Section "Auxilius (obrigatório)" SecMain
   ; ── Install scaffold_zeus (Linux ELF) into WSL Ubuntu ──────────────────────
   ; electron-builder bundles bin/scaffold_zeus into resources\ via extraResources
   DetailPrint "Instalando scaffold_zeus no WSL Ubuntu..."
-  ExecWait `wsl.exe -d Ubuntu -- bash -c "install -m755 $$(wslpath -u '$INSTDIR\resources\scaffold_zeus') /usr/local/bin/scaffold_zeus"` $0
+  ExecWait `wsl.exe -d Ubuntu -u root -- bash -c "install -m755 $$(wslpath -u '$INSTDIR\resources\scaffold_zeus') /usr/local/bin/scaffold_zeus"` $0
   ${If} $0 == 0
     DetailPrint "scaffold_zeus instalado em /usr/local/bin no WSL."
   ${Else}
@@ -106,7 +106,7 @@ SectionEnd
 Section "Uninstall"
 
   ; Remove scaffold_zeus from WSL
-  ExecWait 'wsl.exe -d Ubuntu -- bash -c "rm -f /usr/local/bin/scaffold_zeus"'
+  ExecWait 'wsl.exe -d Ubuntu -u root -- bash -c "rm -f /usr/local/bin/scaffold_zeus"'
 
   ; Remove app files
   RMDir /r "$INSTDIR"
