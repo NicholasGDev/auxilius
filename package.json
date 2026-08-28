@@ -11,7 +11,10 @@
     "docker:dev": "bash scripts/docker-dev.sh",
     "docker:cpp": "bash scripts/docker-build.sh",
     "cpp:compile": "mkdir -p bin && g++ -std=c++20 -O2 cpp/main.cpp cpp/application/ScaffoldUseCase.cpp cpp/application/EndpointUseCase.cpp cpp/application/EnvironmentUseCase.cpp cpp/infra/templates/PhpTemplates.cpp cpp/infra/scaffold/BackendScaffold.cpp cpp/infra/scaffold/FrontendScaffold.cpp cpp/infra/scaffold/ElectronScaffold.cpp cpp/infra/environment/Environment.cpp cpp/infra/database/Database.cpp -Icpp -lsqlite3 -o bin/scaffold_zeus",
-    "install:universal": "bash scripts/install.sh"
+    "install:universal": "bash scripts/install.sh",
+    "installer:build": "bash installer/build.sh",
+    "installer:linux": "bash installer/build.sh linux",
+    "installer:windows": "bash installer/build.sh windows"
   },
   "dependencies": {
     "@giro-ds/react": "^9.0.0",
