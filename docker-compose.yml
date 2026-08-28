@@ -1,5 +1,5 @@
 services:
-  # Compile C++ binary and copy to bin/
+  # ── Compile C++ binary → bin/ ─────────────────────────────────────────────
   cpp-build:
     build:
       context: .
@@ -9,7 +9,25 @@ services:
       - ./bin:/output
     entrypoint: ["sh", "-c", "cp /build/scaffold_zeus /output/scaffold_zeus && chmod +x /output/scaffold_zeus && echo 'Binary copied to bin/scaffold_zeus'"]
 
-  # Full Electron app build (produces out/)
+  # ── Run Electron app (requires X11 on host) ───────────────────────────────
+  app-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: app-dev
+    environment:
+      - DISPLAY=${DISPLAY:-:0}
+      - NODE_ENV=development
+    volumes:
+      - .:/app
+      - app_node_modules:/app/node_modules   # keep container's Linux node_modules separate
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    network_mode: host
+    depends_on:
+      cpp-build:
+        condition: service_completed_successfully
+
+  # ── Full Electron app build → out/ ────────────────────────────────────────
   app-build:
     build:
       context: .
@@ -18,3 +36,6 @@ services:
     volumes:
       - ./out:/app/out
     entrypoint: ["sh", "-c", "echo 'Build complete — out/ updated'"]
+
+volumes:
+  app_node_modules:

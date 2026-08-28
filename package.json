@@ -8,7 +8,8 @@
     "build": "electron-vite build",
     "preview": "electron-vite preview",
     "package": "electron-vite build && electron-builder",
-    "cpp:build": "bash scripts/docker-build.sh",
+    "docker:dev": "bash scripts/docker-dev.sh",
+    "docker:cpp": "bash scripts/docker-build.sh",
     "cpp:compile": "mkdir -p bin && g++ -std=c++20 -O2 cpp/main.cpp cpp/application/ScaffoldUseCase.cpp cpp/application/EndpointUseCase.cpp cpp/application/EnvironmentUseCase.cpp cpp/infra/templates/PhpTemplates.cpp cpp/infra/scaffold/BackendScaffold.cpp cpp/infra/scaffold/FrontendScaffold.cpp cpp/infra/scaffold/ElectronScaffold.cpp cpp/infra/environment/Environment.cpp -Icpp -o bin/scaffold_zeus"
   },
   "dependencies": {
