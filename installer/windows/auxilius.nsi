@@ -7,7 +7,7 @@ Unicode True
 
 !define APP_NAME        "Auxilius"
 !ifndef APP_VERSION
-  !define APP_VERSION     "0.1.0"
+  !define APP_VERSION     "0.1.1"
 !endif
 !define APP_PUBLISHER   "NicholasGDev"
 !define APP_URL         "https://github.com/NicholasGDev/auxilius"
