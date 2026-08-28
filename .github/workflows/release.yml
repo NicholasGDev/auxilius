@@ -20,7 +20,7 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y \
             g++ libsqlite3-dev dpkg-dev \
-            libwxgtk3.2-dev libwxgtk3.2-0 wx-common \
+            libwxgtk3.2-dev wx-common \
             curl git
 
       - name: Instalar Node.js 20
