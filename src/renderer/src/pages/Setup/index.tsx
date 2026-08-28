@@ -77,9 +77,9 @@ export const SetupPage: React.FC = () => {
         <div className="check-item">
           <div className="check-label">
             Git
-            <span>{status?.git.version ?? 'Verificando…'}</span>
+            <span>{status?.git?.version ?? 'Verificando…'}</span>
           </div>
-          {status && okIcon(status.git.ok)}
+          {status?.git && okIcon(status.git.ok)}
         </div>
 
         {/* Git user config */}
@@ -120,14 +120,14 @@ export const SetupPage: React.FC = () => {
           <div className="check-label">
             NVM + Node 19 e 20 (padrão: 20)
             <span>
-              NVM: {status?.nvm.version ?? '…'} | Node 20: {status?.node20.version ?? '…'} | Node 19: {status?.node19.version ?? '…'}
+              NVM: {status?.nvm?.version ?? '…'} | Node 20: {status?.node20?.version ?? '…'} | Node 19: {status?.node19?.version ?? '…'}
             </span>
           </div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            {status && okIcon(status.nvm.ok && status.node20.ok)}
+            {status?.nvm && okIcon(status.nvm.ok && status.node20.ok)}
             <Button
               variant="outlined"
-              disabled={running !== null || (status?.nvm.ok && status?.node20.ok && status?.node19.ok)}
+              disabled={running !== null || (status?.nvm?.ok && status?.node20?.ok && status?.node19?.ok)}
               onClick={() => run('nvm', () => window.auxilius.environment.setupNvm())}
             >
               {running === 'nvm' ? 'Instalando…' : 'Instalar'}

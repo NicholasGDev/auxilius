@@ -71,41 +71,50 @@ wxThread::ExitCode InstallWorker::Entry()
     progress(0);
 
     // Step 1 — system deps
-    log("\n[1/5] Dependências do sistema");
+    log("\n[1/6] Dependências do sistema");
     ok = run("apt-get install",
              "DEBIAN_FRONTEND=noninteractive apt-get install -y -qq "
              "build-essential g++ libsqlite3-dev git curl") && ok;
-    progress(20);
+    progress(17);
     if (TestDestroy()) goto done;
 
     // Step 2 — nvm + Node 20
-    log("\n[2/5] nvm + Node.js 20 LTS");
+    log("\n[2/6] nvm + Node.js 20 LTS");
     ok = run("instalar nvm",
              "[ -d $HOME/.nvm ] || curl -fsSL "
              "https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash") && ok;
     ok = run("node 20",
              "export NVM_DIR=\"$HOME/.nvm\"; source \"$NVM_DIR/nvm.sh\"; "
              "nvm install 20 && nvm use 20 && nvm alias default 20") && ok;
-    progress(40);
+    progress(33);
     if (TestDestroy()) goto done;
 
     // Step 3 — npm install
-    log("\n[3/5] npm install");
+    log("\n[3/6] npm install");
     ok = run("npm install", "cd \"" + installDir_ + "\" && npm install --prefer-offline") && ok;
-    progress(60);
+    progress(50);
     if (TestDestroy()) goto done;
 
     // Step 4 — compile C++
-    log("\n[4/5] Compilar binário C++ (scaffold_zeus)");
+    log("\n[4/6] Compilar binário C++ (scaffold_zeus)");
     ok = run("g++ -lsqlite3",
              "cd \"" + installDir_ + "\" && "
              "export NVM_DIR=\"$HOME/.nvm\"; source \"$NVM_DIR/nvm.sh\"; "
              "npm run cpp:compile") && ok;
-    progress(80);
+    progress(67);
     if (TestDestroy()) goto done;
 
-    // Step 5 — verify SQLite DB
-    log("\n[5/5] Verificar banco de dados SQLite");
+    // Step 5 — install binary to /usr/local/bin (needed so Electron/Windows finds it via WSL)
+    log("\n[5/6] Instalar scaffold_zeus em /usr/local/bin");
+    run("install /usr/local/bin",
+        "install -m755 \"" + installDir_ + "/bin/scaffold_zeus\" /usr/local/bin/scaffold_zeus"
+        " 2>/dev/null || echo 'Aviso: sem permissão — execute: "
+        "sudo install -m755 " + installDir_ + "/bin/scaffold_zeus /usr/local/bin/scaffold_zeus'");
+    progress(83);
+    if (TestDestroy()) goto done;
+
+    // Step 6 — verify SQLite DB
+    log("\n[6/6] Verificar banco de dados SQLite");
     {
         std::string dbDir = std::string(getenv("HOME") ? getenv("HOME") : "/root") + "/.auxilius";
         fs::create_directories(dbDir);

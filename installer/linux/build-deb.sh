@@ -34,6 +34,8 @@ rsync -a --exclude='node_modules' --exclude='.git' --exclude='dist' --exclude='d
 # scaffold_zeus binary
 install -m 755 "$ROOT/bin/scaffold_zeus" "$PKG_DIR/opt/auxilius/bin/scaffold_zeus"
 ln -sf "/opt/auxilius/bin/scaffold_zeus" "$PKG_DIR/usr/bin/scaffold_zeus"
+install -d "$PKG_DIR/usr/local/bin"
+ln -sf "/opt/auxilius/bin/scaffold_zeus" "$PKG_DIR/usr/local/bin/scaffold_zeus"
 
 # Launcher script — sources nvm then runs electron-vite dev
 cat > "$PKG_DIR/usr/bin/auxilius" << 'LAUNCHER'

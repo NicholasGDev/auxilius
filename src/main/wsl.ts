@@ -1,5 +1,4 @@
 import { spawn, spawnSync } from 'child_process'
-import { existsSync } from 'fs'
 import { join } from 'path'
 
 // Matches \\wsl$\Distro\... and \\wsl.localhost\Distro\...
@@ -55,18 +54,13 @@ export function resolveBinary(projectPath: string): { cmd: string; prefix: strin
     return { cmd: bin, prefix: [] }
   }
 
-  if (isWslPath(projectPath)) {
-    const distro = distroOf(projectPath)
-    const bin    = findWslBinary(distro)
-    // wsl.exe -d Ubuntu -- /path/to/scaffold_zeus [args...]
-    return { cmd: 'wsl.exe', prefix: ['-d', distro, '--', bin] }
-  }
-
-  // Windows-native binary (scaffold_zeus.exe beside the app)
-  const nativeBin = existsSync(join(process.resourcesPath, 'scaffold_zeus.exe'))
-    ? join(process.resourcesPath, 'scaffold_zeus.exe')
-    : join(__dirname, '../../../bin/scaffold_zeus.exe')
-  return { cmd: nativeBin, prefix: [] }
+  // scaffold_zeus is a Linux binary compiled inside WSL — on Windows every
+  // invocation must be routed through wsl.exe, even for non-WSL project paths
+  // (e.g. the DB sentinel path or the environment check, which have no project dir).
+  const distro = isWslPath(projectPath) ? distroOf(projectPath) : 'Ubuntu'
+  const bin    = findWslBinary(distro)
+  // wsl.exe -d Ubuntu -- /path/to/scaffold_zeus [args...]
+  return { cmd: 'wsl.exe', prefix: ['-d', distro, '--', bin] }
 }
 
 /** Translate a project path for use as a CLI argument */

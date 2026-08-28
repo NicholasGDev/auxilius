@@ -24,6 +24,7 @@ BrandingText "${APP_NAME} v${APP_VERSION} — ${APP_PUBLISHER}"
 
 ; ── UI ────────────────────────────────────────────────────────────────────────
 !include "MUI2.nsh"
+!include "LogicLib.nsh"
 
 !define MUI_ABORTWARNING
 !define MUI_ICON          "..\..\resources\icon.ico"
@@ -78,6 +79,16 @@ Section "Auxilius (obrigatório)" SecMain
   ; Write uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
 
+  ; ── Install scaffold_zeus (Linux ELF) into WSL Ubuntu ──────────────────────
+  ; electron-builder bundles bin/scaffold_zeus into resources\ via extraResources
+  DetailPrint "Instalando scaffold_zeus no WSL Ubuntu..."
+  ExecWait `wsl.exe -d Ubuntu -- bash -c "install -m755 $$(wslpath -u '$INSTDIR\resources\scaffold_zeus') /usr/local/bin/scaffold_zeus"` $0
+  ${If} $0 == 0
+    DetailPrint "scaffold_zeus instalado em /usr/local/bin no WSL."
+  ${Else}
+    DetailPrint "Aviso: falha ao instalar no WSL (código $0). Certifique-se que WSL2 com Ubuntu está instalado e que o usuário padrão é root."
+  ${EndIf}
+
   ; Start Menu shortcut
   CreateDirectory "$SMPROGRAMS\${APP_NAME}"
   CreateShortcut  "$SMPROGRAMS\${APP_NAME}\${APP_NAME}.lnk" \
@@ -93,6 +104,9 @@ SectionEnd
 
 ; ── Uninstall ─────────────────────────────────────────────────────────────────
 Section "Uninstall"
+
+  ; Remove scaffold_zeus from WSL
+  ExecWait 'wsl.exe -d Ubuntu -- bash -c "rm -f /usr/local/bin/scaffold_zeus"'
 
   ; Remove app files
   RMDir /r "$INSTDIR"

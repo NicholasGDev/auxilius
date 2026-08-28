@@ -19,6 +19,9 @@ const auxilius = {
     setupNvm:       ()                             => ipcRenderer.invoke('environment:setup-nvm'),
     cloneProject:   ()                             => ipcRenderer.invoke('environment:clone-project'),
     configureGit:   (name: string, email: string)  => ipcRenderer.invoke('environment:configure-git', name, email),
+    wslCheck:       ()                             => ipcRenderer.invoke('environment:wsl-check'),
+    wslMemory:      ()                             => ipcRenderer.invoke('environment:wsl-memory'),
+    mkdirProjects:  ()                             => ipcRenderer.invoke('environment:mkdir-projects'),
   },
   endpoints: {
     listContexts: (projectPath: string) => ipcRenderer.invoke('endpoints:list-contexts', projectPath),

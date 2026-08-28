@@ -16,6 +16,12 @@ interface CommandResult {
   skipped?: string[]
 }
 
+interface WslCheckResult {
+  isLinux: boolean
+  wslAvailable: boolean
+  ubuntuAvailable: boolean
+}
+
 interface CheckResult {
   ok: boolean
   version?: string
@@ -65,6 +71,9 @@ declare global {
         setupNvm():                                 Promise<CommandResult>
         cloneProject():                             Promise<CommandResult>
         configureGit(name: string, email: string):  Promise<CommandResult>
+        wslCheck():                                 Promise<WslCheckResult>
+        wslMemory():                                Promise<CommandResult>
+        mkdirProjects():                            Promise<CommandResult>
       }
       endpoints: {
         listContexts(projectPath: string):  Promise<string[]>

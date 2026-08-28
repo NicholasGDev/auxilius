@@ -406,3 +406,127 @@ body,
     border-radius: 3px;
   }
 }
+
+// ── Onboarding wizard ─────────────────────────────────────────────────────────
+
+.wizard-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: 16px;
+  padding: 28px 28px 24px;
+  backdrop-filter: blur(8px);
+  width: 100%;
+  max-width: 560px;
+
+  h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 20px;
+  }
+}
+
+.wizard-step {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+
+  &:last-child { border-bottom: none; }
+
+  .step-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .step-icon {
+    width: 22px;
+    text-align: center;
+    font-size: 0.95rem;
+    flex-shrink: 0;
+  }
+
+  .step-body {
+    flex: 1;
+    min-width: 0;
+
+    .step-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+
+    .step-desc {
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.35);
+      font-family: 'Courier New', monospace;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .step-badge {
+    font-size: 0.68rem;
+    padding: 2px 7px;
+    border-radius: 999px;
+    flex-shrink: 0;
+
+    &.s-done    { background: rgba(78, 201, 176, 0.15); color: #4ec9b0; }
+    &.s-error   { background: rgba(244, 135, 113, 0.15); color: #f48771; }
+    &.s-running { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
+    &.s-skip    { background: rgba(255, 255, 255, 0.07); color: #6b7280; }
+  }
+
+  .step-output {
+    margin-top: 6px;
+    padding-left: 34px;
+    font-size: 0.7rem;
+    font-family: 'Courier New', monospace;
+    white-space: pre-wrap;
+    word-break: break-all;
+    line-height: 1.45;
+    max-height: 120px;
+    overflow-y: auto;
+
+    &.out-ok    { color: #4ec9b0; }
+    &.out-error { color: #f87171; }
+    &.out-info  { color: #9cdcfe; }
+  }
+
+  .step-skip-btn {
+    margin-left: 34px;
+    margin-top: 6px;
+    font-size: 0.7rem;
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+    color: rgba(255, 255, 255, 0.45);
+    padding: 3px 10px;
+    cursor: pointer;
+
+    &:hover { border-color: rgba(255, 255, 255, 0.35); color: #e2e8f0; }
+  }
+}
+
+.wizard-actions {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.wizard-back {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.78rem;
+  cursor: pointer;
+  padding: 0;
+  align-self: flex-start;
+  margin-bottom: 16px;
+
+  &:hover { color: rgba(255, 255, 255, 0.7); }
+}
+

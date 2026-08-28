@@ -15,7 +15,9 @@ export const HomePage: React.FC = () => {
 
   useEffect(() => { refresh() }, [])
 
-  const items = status
+  // The main process may fall back to an error shape (e.g. binary/WSL failure);
+  // guard against missing fields instead of crashing the whole page.
+  const items = status?.git
     ? [
         { label: 'Git',          ok: status.git.ok,          detail: status.git.version ?? status.git.message },
         { label: 'NVM',          ok: status.nvm.ok,          detail: status.nvm.version ?? status.nvm.message },
