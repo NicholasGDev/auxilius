@@ -131,9 +131,7 @@ jobs:
 
       - name: Gerar instalador .exe (NSIS)
         run: |
-          & "C:\Program Files (x86)\NSIS\makensis.exe" `
-            /DAPP_VERSION=${{ github.ref_name }} `
-            installer\windows\auxilius.nsi
+          & "C:\Program Files (x86)\NSIS\makensis.exe" installer\windows\auxilius.nsi
 
       - name: Upload artefatos Windows
         uses: actions/upload-artifact@v4

@@ -6,7 +6,9 @@
 Unicode True
 
 !define APP_NAME        "Auxilius"
-!define APP_VERSION     "0.1.0"
+!ifndef APP_VERSION
+  !define APP_VERSION     "0.1.0"
+!endif
 !define APP_PUBLISHER   "NicholasGDev"
 !define APP_URL         "https://github.com/NicholasGDev/auxilius"
 !define APP_DESCRIPTION "Zeus Retail Evolution — Developer Toolbox"
