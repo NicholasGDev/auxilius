@@ -11,7 +11,7 @@ permissions:
 jobs:
   # ─── Linux: .deb + GTK3 wizard ───────────────────────────────────────────────
   build-linux:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
@@ -145,7 +145,7 @@ jobs:
   # ─── Criar GitHub Release com todos os artefatos ─────────────────────────────
   release:
     needs: [build-linux, build-windows]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
