@@ -8,6 +8,9 @@ import { listDirEntries } from './wsl'
 
 const isDev = process.env.NODE_ENV === 'development'
 
+// prevents black screen on Windows when GPU acceleration is unavailable
+if (!isDev) app.disableHardwareAcceleration()
+
 function createWindow(): void {
   const mainWindow = new BrowserWindow({
     width: 1280,
