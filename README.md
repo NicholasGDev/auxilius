@@ -1,12 +1,125 @@
-# Auxilius — Zeus Retail Evolution Developer Toolbox
+# Auxilius — Caixa de Ferramentas Zeus Retail Evolution
 
-> Desktop app (Electron + React + Giro DS) powered by a C++ CLI engine using DDD architecture.  
+> App desktop (Electron + React + Giro DS) com motor C++20 em arquitetura DDD.  
 > Layout inspirado no VS Code — Activity Bar, Explorer, File Tree, Tab Bar, Status Bar.  
-> Persiste configurações em SQLite via binário C++. Sem Docker necessário.
+> Persiste configurações em SQLite via binário C++. Sem Docker. Suporte a WSL.
 
 ---
 
-## Project Structure
+## 📥 Instalação / Download
+
+> Todas as versões disponíveis em: **[Releases do GitHub](https://github.com/zanthustecnologia/auxilius/releases/latest)**
+
+### 🐧 Linux — Pacote `.deb` (Ubuntu / Debian) ✅ Recomendado
+
+Instalável e desinstalável pelo sistema (apt / dpkg):
+
+```bash
+# 1. Baixar o pacote
+wget https://github.com/zanthustecnologia/auxilius/releases/latest/download/auxilius_0.1.0_amd64.deb
+
+# 2. Instalar
+sudo dpkg -i auxilius_0.1.0_amd64.deb
+
+# Caso falte alguma dependência, execute:
+sudo apt-get install -f
+
+# 3. Iniciar o app
+auxilius
+```
+
+**Desinstalar:**
+
+```bash
+# Remove o app (mantém configurações)
+sudo dpkg -r auxilius
+# ou via apt:
+sudo apt remove auxilius
+
+# Remove tudo incluindo /opt/auxilius (purge completo)
+sudo dpkg -P auxilius
+```
+
+O `.deb` registra o app no sistema, aparece no **Software Center** e instala automaticamente `nvm` + Node.js 20 no `postinst`.
+
+---
+
+### 🐧 Linux — Instalador Gráfico GTK3 (Wizard)
+
+Para distribuições que não usam `.deb` (Fedora, Arch, etc.) ou preferência por assistente visual:
+
+```bash
+# 1. Baixar e extrair
+wget https://github.com/zanthustecnologia/auxilius/releases/latest/download/auxilius-installer-linux-x64.tar.gz
+tar -xzf auxilius-installer-linux-x64.tar.gz
+
+# 2. Executar o assistente (requer GTK3)
+chmod +x auxilius-installer
+./auxilius-installer
+```
+
+O wizard gráfico guia por 4 etapas: boas-vindas → escolha do diretório → instalação com log em tempo real → conclusão.
+
+---
+
+### 🪟 Windows — Instalador `.exe` (NSIS)
+
+Registra no **Painel de Controle → Programas e Recursos** para desinstalação nativa.
+
+```
+1. Baixar:
+   https://github.com/zanthustecnologia/auxilius/releases/latest/download/auxilius-setup-0.1.0.exe
+
+2. Executar auxilius-setup-0.1.0.exe como administrador (recomendado)
+
+3. Seguir o assistente de instalação
+
+4. O app é instalado em %LOCALAPPDATA%\Auxilius
+   com atalhos no Menu Iniciar e Área de Trabalho
+```
+
+**Desinstalar no Windows:**
+- Painel de Controle → Programas → Programas e Recursos → **Auxilius** → Desinstalar
+- Ou: Configurações → Aplicativos → **Auxilius** → Desinstalar
+
+---
+
+### 🪟 Windows com Projeto no WSL
+
+O Electron roda no Windows, mas o projeto `zeus-retail-evolution` pode ficar dentro do WSL2:
+
+```
+1. No seletor "Escolher Projeto", navegue para o caminho WSL:
+   \\wsl$\Ubuntu\root\projects\zeus-retail-evolution
+
+2. O app detecta automaticamente o caminho WSL e roteia
+   todos os comandos C++ via wsl.exe -d Ubuntu
+
+3. Requisitos:
+   - WSL2 instalado com Ubuntu
+   - scaffold_zeus compilado dentro do WSL em ~/auxilius/bin/
+```
+
+Os binários C++ (`scaffold_zeus`) vivem no WSL. O Electron traduz os caminhos automaticamente via `src/main/wsl.ts`.
+
+---
+
+### 📦 Instalador Universal (Shell — Linux/macOS)
+
+```bash
+bash scripts/install.sh
+```
+
+Detecta o SO e executa automaticamente:
+1. Instala `g++`, `libsqlite3-dev`, `git`, `curl` (apt / brew)
+2. Instala `nvm` + Node.js 20 LTS
+3. Executa `npm install`
+4. Compila o binário C++ com `-lsqlite3`
+5. Cria atalho `.desktop` (Linux)
+
+---
+
+## Estrutura do Projeto
 
 ```
 auxilius/
@@ -208,45 +321,41 @@ Estrutura baseada em `/root/projects/zeus-retail-evolution/front/src/app/pages/T
 
 ---
 
-## Instalação
-
-### Instalador Universal (recomendado)
-
-```bash
-bash scripts/install.sh
-```
-
-O script detecta Linux/macOS e:
-1. Instala `g++`, `libsqlite3-dev`, `git`, `curl` (apt / brew)
-2. Instala `nvm` + Node.js 20 LTS
-3. Executa `npm install`
-4. Compila o binário C++ com `-lsqlite3`
-5. Cria atalho de desktop (Linux)
-
-### Manual
-
-```bash
-# Pré-requisitos: g++ 12+, libsqlite3-dev, Node 20+
-npm install
-npm run cpp:compile    # compila com -lsqlite3
-npm run dev
-```
-
-### Docker (opcional — apenas build do binário)
-
-```bash
-npm run cpp:build    # docker-compose cpp-build service
-```
-
----
-
 ## Desenvolvimento
 
 ```bash
-npm run dev              # Electron + Vite dev server
-npm run cpp:compile      # Recompila binário C++ (inclui SQLite)
-npm run install:universal  # Instalador universal
+npm run dev                   # Electron + Vite dev server
+npm run cpp:compile           # Recompila binário C++ (inclui SQLite)
+npm run installer:linux       # Build instalador GTK3 → bin/auxilius-installer
+npm run installer:linux:deb   # Build pacote .deb   → dist/auxilius_*.deb
+npm run installer:windows     # Build .exe NSIS     → dist/auxilius-setup-*.exe
+npm run install:universal     # Instalador shell (sem GUI)
 ```
+
+**Pré-requisitos para build:**
+
+| Artefato | Requisito extra |
+|---|---|
+| Binário C++ | `g++ 12+`, `libsqlite3-dev` |
+| Pacote `.deb` | `dpkg-deb` (padrão no Debian/Ubuntu) |
+| Wizard GTK3 | `libwxgtk3.2-dev`, `wx-config` |
+| Instalador Windows | `makensis` (NSIS) |
+
+---
+
+## Publicar Nova Versão (GitHub Actions)
+
+O workflow `.github/workflows/release.yml` compila e publica os 3 artefatos automaticamente ao criar uma tag:
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+O GitHub Actions:
+1. Compila `scaffold_zeus` + instalador GTK3 + `.deb` no runner `ubuntu-22.04`
+2. Compila `scaffold_zeus.exe` + `.exe` NSIS no runner `windows-latest`
+3. Cria uma [GitHub Release](https://github.com/zanthustecnologia/auxilius/releases) com os 3 arquivos para download
 
 ---
 
@@ -265,7 +374,7 @@ npm run install:universal  # Instalador universal
 
 ---
 
-## Pages
+## Páginas
 
 | Página          | Rota         | Descrição                                              |
 |-----------------|--------------|--------------------------------------------------------|

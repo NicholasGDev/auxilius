@@ -1,0 +1,187 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  # ─── Linux: .deb + GTK3 wizard ───────────────────────────────────────────────
+  build-linux:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar dependências de build
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y \
+            g++ libsqlite3-dev dpkg-dev \
+            libwxgtk3.2-dev libwxgtk3.2-0 wx-common \
+            curl git
+
+      - name: Instalar Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar dependências npm
+        run: npm ci
+
+      - name: Compilar binário C++ (scaffold_zeus)
+        run: |
+          mkdir -p bin
+          g++ -std=c++20 -O2 \
+            cpp/infra/database/Database.cpp \
+            cpp/infra/scaffold/BackendScaffold.cpp \
+            cpp/infra/scaffold/FrontendScaffold.cpp \
+            cpp/infra/scaffold/ElectronScaffold.cpp \
+            cpp/infra/templates/PhpTemplates.cpp \
+            cpp/infra/environment/Environment.cpp \
+            cpp/application/ScaffoldUseCase.cpp \
+            cpp/application/EndpointUseCase.cpp \
+            cpp/application/EnvironmentUseCase.cpp \
+            cpp/main.cpp \
+            -Icpp -lsqlite3 -o bin/scaffold_zeus
+
+      - name: Build Electron app
+        run: npm run build
+
+      - name: Compilar instalador GTK3 (wizard)
+        run: |
+          mkdir -p bin
+          WX_CFLAGS=$(wx-config --cflags)
+          WX_LIBS=$(wx-config --libs)
+          g++ -std=c++20 -O2 \
+            installer/src/Installer.cpp \
+            $WX_CFLAGS $WX_LIBS \
+            -o bin/auxilius-installer
+
+      - name: Gerar pacote .deb
+        run: |
+          chmod +x installer/linux/build-deb.sh
+          bash installer/linux/build-deb.sh
+
+      - name: Empacotar binário GTK3 como .tar.gz
+        run: |
+          tar -czf dist/auxilius-installer-linux-x64.tar.gz \
+            -C bin auxilius-installer
+
+      - name: Upload artefatos Linux
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-artifacts
+          path: |
+            dist/auxilius_*.deb
+            dist/auxilius-installer-linux-x64.tar.gz
+
+  # ─── Windows: NSIS .exe ──────────────────────────────────────────────────────
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar dependências npm
+        run: npm ci
+
+      - name: Instalar MinGW + SQLite
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          install: >-
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-sqlite3
+
+      - name: Compilar binário C++ para Windows
+        shell: msys2 {0}
+        run: |
+          mkdir -p bin
+          g++ -std=c++20 -O2 \
+            cpp/infra/database/Database.cpp \
+            cpp/infra/scaffold/BackendScaffold.cpp \
+            cpp/infra/scaffold/FrontendScaffold.cpp \
+            cpp/infra/scaffold/ElectronScaffold.cpp \
+            cpp/infra/templates/PhpTemplates.cpp \
+            cpp/infra/environment/Environment.cpp \
+            cpp/application/ScaffoldUseCase.cpp \
+            cpp/application/EndpointUseCase.cpp \
+            cpp/application/EnvironmentUseCase.cpp \
+            cpp/main.cpp \
+            -Icpp -lsqlite3 -o bin/scaffold_zeus.exe
+
+      - name: Build Electron app
+        run: npm run build
+
+      - name: Instalar NSIS
+        run: |
+          choco install nsis -y
+
+      - name: Gerar instalador .exe (NSIS)
+        run: |
+          mkdir -p dist
+          & "C:\Program Files (x86)\NSIS\makensis.exe" `
+            /DAPP_VERSION=${{ github.ref_name }} `
+            installer\windows\auxilius.nsi
+
+      - name: Upload artefatos Windows
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-artifacts
+          path: dist/auxilius-setup-*.exe
+
+  # ─── Criar GitHub Release com todos os artefatos ─────────────────────────────
+  release:
+    needs: [build-linux, build-windows]
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Baixar artefatos Linux
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-artifacts
+          path: dist/
+
+      - name: Baixar artefatos Windows
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-artifacts
+          path: dist/
+
+      - name: Extrair versão da tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
+
+      - name: Criar Release no GitHub
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Auxilius v${{ steps.version.outputs.VERSION }}"
+          body: |
+            ## Auxilius v${{ steps.version.outputs.VERSION }} — Zeus Retail Evolution Toolbox
+
+            ### Downloads
+
+            | Plataforma | Arquivo | Instruções |
+            |---|---|---|
+            | 🐧 Linux (.deb) | `auxilius_${{ steps.version.outputs.VERSION }}_amd64.deb` | [Ver instruções](#linux-deb) |
+            | 🐧 Linux (Wizard GTK3) | `auxilius-installer-linux-x64.tar.gz` | [Ver instruções](#linux-gtk3) |
+            | 🪟 Windows (.exe) | `auxilius-setup-${{ steps.version.outputs.VERSION }}.exe` | [Ver instruções](#windows-exe) |
+
+            Consulte o [README](https://github.com/${{ github.repository }}#-instalação--download) para o tutorial completo.
+          draft: false
+          prerelease: false
+          files: |
+            dist/auxilius_*.deb
+            dist/auxilius-installer-linux-x64.tar.gz
+            dist/auxilius-setup-*.exe
+          generate_release_notes: true
