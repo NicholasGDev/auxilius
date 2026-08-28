@@ -133,6 +133,23 @@ jobs:
         run: |
           & "C:\Program Files (x86)\NSIS\makensis.exe" installer\windows\auxilius.nsi
 
+      - name: Assinar instalador com certificado
+        if: ${{ env.CODE_SIGN_CERT != '' }}
+        env:
+          CODE_SIGN_CERT: ${{ secrets.CODE_SIGN_CERT_B64 }}
+          CODE_SIGN_PASS: ${{ secrets.CODE_SIGN_PASS }}
+        run: |
+          $bytes = [Convert]::FromBase64String($env:CODE_SIGN_CERT)
+          [IO.File]::WriteAllBytes("cert.pfx", $bytes)
+          $signtool = Get-ChildItem "C:\Program Files (x86)\Windows Kits\10\bin" -Recurse -Filter signtool.exe |
+            Where-Object { $_.FullName -like "*x64*" } |
+            Sort-Object LastWriteTime -Descending |
+            Select-Object -First 1 -ExpandProperty FullName
+          & $signtool sign /fd SHA256 /f cert.pfx /p $env:CODE_SIGN_PASS `
+            /tr http://timestamp.digicert.com /td SHA256 `
+            dist\auxilius-setup-0.1.0.exe
+          Remove-Item cert.pfx
+
       - name: Upload artefatos Windows
         uses: actions/upload-artifact@v4
         with:
