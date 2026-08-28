@@ -1,0 +1,45 @@
+{
+  "name": "auxilius",
+  "version": "0.1.0",
+  "description": "Developer toolbox for Zeus Retail Evolution",
+  "main": "out/main/index.js",
+  "scripts": {
+    "dev": "electron-vite dev -- --no-sandbox --disable-gpu",
+    "build": "electron-vite build",
+    "preview": "electron-vite preview",
+    "package": "electron-vite build && electron-builder",
+    "cpp:build": "bash scripts/docker-build.sh",
+    "cpp:compile": "mkdir -p bin && g++ -std=c++20 -O2 cpp/main.cpp cpp/application/ScaffoldUseCase.cpp cpp/application/EndpointUseCase.cpp cpp/application/EnvironmentUseCase.cpp cpp/infra/templates/PhpTemplates.cpp cpp/infra/scaffold/BackendScaffold.cpp cpp/infra/scaffold/FrontendScaffold.cpp cpp/infra/scaffold/ElectronScaffold.cpp cpp/infra/environment/Environment.cpp -Icpp -o bin/scaffold_zeus"
+  },
+  "dependencies": {
+    "@giro-ds/react": "^9.0.0",
+    "@giro-ds/tokens": "^1.0.1",
+    "@giro-ds/utilities": "^1.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@vitejs/plugin-react": "^4.2.0",
+    "electron": "^28.0.0",
+    "electron-builder": "^24.0.0",
+    "electron-vite": "^2.0.0",
+    "sass": "^1.69.0",
+    "typescript": "^5.2.0",
+    "vite": "^5.0.0"
+  },
+  "build": {
+    "appId": "com.zanthus.auxilius",
+    "productName": "Auxilius",
+    "linux": {
+      "target": ["AppImage", "deb"]
+    },
+    "extraResources": [
+      { "from": "bin/scaffold_zeus", "to": "scaffold_zeus" },
+      { "from": "cpp", "to": "cpp" }
+    ]
+  }
+}

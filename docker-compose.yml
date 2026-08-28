@@ -1,0 +1,20 @@
+services:
+  # Compile C++ binary and copy to bin/
+  cpp-build:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: cpp-builder
+    volumes:
+      - ./bin:/output
+    entrypoint: ["sh", "-c", "cp /build/scaffold_zeus /output/scaffold_zeus && chmod +x /output/scaffold_zeus && echo 'Binary copied to bin/scaffold_zeus'"]
+
+  # Full Electron app build (produces out/)
+  app-build:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: app-builder
+    volumes:
+      - ./out:/app/out
+    entrypoint: ["sh", "-c", "echo 'Build complete — out/ updated'"]

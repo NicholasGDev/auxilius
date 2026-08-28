@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# electron-vite build output
+out/
+dist/
+release/
+
+# Compiled C++ binaries
+bin/
+scaffold_zeus
+
+# Electron packaged apps
+*.AppImage
+*.deb
+*.dmg
+*.exe
+*.snap
+
+# Environment
+.env
+.env.local
+*.local
+
+# Editor
+.vscode/settings.json
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
