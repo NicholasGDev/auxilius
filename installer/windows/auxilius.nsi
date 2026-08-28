@@ -41,6 +41,8 @@ BrandingText "${APP_NAME} v${APP_VERSION} — ${APP_PUBLISHER}"
 
 !insertmacro MUI_LANGUAGE "PortugueseBR"
 
+!include "FileFunc.nsh"
+
 ; ── Install ───────────────────────────────────────────────────────────────────
 Section "Auxilius (obrigatório)" SecMain
   SectionIn RO
@@ -105,5 +107,4 @@ Section "Uninstall"
 
 SectionEnd
 
-; ── Helpers ───────────────────────────────────────────────────────────────────
-!include "FileFunc.nsh"
+
