@@ -40,6 +40,10 @@
   "build": {
     "appId": "com.zanthus.auxilius",
     "productName": "Auxilius",
+    "files": [
+      "out/**",
+      "package.json"
+    ],
     "linux": {
       "target": [
         "AppImage",
