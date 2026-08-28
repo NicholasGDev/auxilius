@@ -69,7 +69,7 @@ cat > "$PKG_DIR/DEBIAN/control" << CTRL
 Package: $PKG_NAME
 Version: $PKG_VER
 Architecture: $PKG_ARCH
-Maintainer: Zanthus Tecnologia <dev@zanthus.com.br>
+Maintainer: NicholasGDev <nicholas@zanthus.com.br>
 Depends: libsqlite3-0, git, curl, build-essential
 Recommends: nodejs (>= 20)
 Section: devel

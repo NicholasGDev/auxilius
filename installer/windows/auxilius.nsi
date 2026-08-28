@@ -8,7 +8,7 @@ Unicode True
 !define APP_NAME        "Auxilius"
 !define APP_VERSION     "0.1.0"
 !define APP_PUBLISHER   "Zanthus Tecnologia"
-!define APP_URL         "https://github.com/zanthustecnologia/auxilius"
+!define APP_URL         "https://github.com/NicholasGDev/auxilius"
 !define APP_DESCRIPTION "Zeus Retail Evolution — Developer Toolbox"
 !define UNINSTALL_KEY   "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}"
 !define INSTALL_REG_KEY "Software\${APP_PUBLISHER}\${APP_NAME}"
