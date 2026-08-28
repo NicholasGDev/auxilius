@@ -77,7 +77,7 @@ export const WelcomePage: React.FC<Props> = ({ onProjectSelected }) => {
                 onKeyDown={e => e.key === 'Enter' && handleNew()}
               />
               <button className="browse-btn" onClick={() => browsePath(setNewPath, () => setNewError(''))} title="Navegar">
-                📁
+                <FolderIcon size={18} />
               </button>
             </div>
             {newError && <span className="field-error">{newError}</span>}
@@ -106,7 +106,7 @@ export const WelcomePage: React.FC<Props> = ({ onProjectSelected }) => {
                 onKeyDown={e => e.key === 'Enter' && handleExisting()}
               />
               <button className="browse-btn" onClick={() => browsePath(setExistingPath, () => setExistingError(''))} title="Navegar">
-                📁
+                <FolderIcon size={18} />
               </button>
             </div>
             {existingError && <span className="field-error">{existingError}</span>}
