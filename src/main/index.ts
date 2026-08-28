@@ -1,10 +1,10 @@
 import { app, BrowserWindow, ipcMain, dialog } from 'electron'
 import { join } from 'path'
-import { readdirSync } from 'fs'
 import { registerScaffoldHandlers } from './ipc/scaffold'
 import { registerEnvironmentHandlers } from './ipc/environment'
 import { registerEndpointHandlers } from './ipc/endpoints'
 import { registerDatabaseHandlers } from './ipc/database'
+import { listDirEntries } from './wsl'
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -49,20 +49,8 @@ app.whenReady().then(() => {
     return result.canceled ? null : result.filePaths[0]
   })
 
-  const SKIP_DIRS = new Set(['.git', 'node_modules', 'vendor', '.DS_Store', '__pycache__', 'dist', 'out'])
   ipcMain.handle('fs:list-dir', async (_event, dirPath: string) => {
-    try {
-      const entries = readdirSync(dirPath, { withFileTypes: true })
-      return entries
-        .filter(e => !SKIP_DIRS.has(e.name))
-        .map(e => ({ name: e.name, path: `${dirPath}/${e.name}`, isDir: e.isDirectory() }))
-        .sort((a, b) => {
-          if (a.isDir !== b.isDir) return a.isDir ? -1 : 1
-          return a.name.localeCompare(b.name)
-        })
-    } catch {
-      return []
-    }
+    return listDirEntries(dirPath)
   })
 
   createWindow()

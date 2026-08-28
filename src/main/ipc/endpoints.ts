@@ -1,33 +1,15 @@
-import { ipcMain, app } from 'electron'
+import { ipcMain } from 'electron'
 import type { IpcMainInvokeEvent } from 'electron'
-import { spawn } from 'child_process'
-import { join } from 'path'
-import { existsSync, readdirSync } from 'fs'
-
-function getBinary(): string {
-  if (app.isPackaged) return join(process.resourcesPath, 'scaffold_zeus')
-  const devBin = join(app.getAppPath(), 'bin', 'scaffold_zeus')
-  if (existsSync(devBin)) return devBin
-  return join(app.getAppPath(), 'scaffold_zeus')
-}
-
-function runBinary(args: string[]): Promise<{ stdout: string; stderr: string; code: number }> {
-  return new Promise((resolve) => {
-    const proc = spawn(getBinary(), args)
-    let stdout = '', stderr = ''
-    proc.stdout.on('data', (d: Buffer) => { stdout += d.toString() })
-    proc.stderr.on('data', (d: Buffer) => { stderr += d.toString() })
-    proc.on('close', (code: number | null) => resolve({ stdout, stderr, code: code ?? 0 }))
-    proc.on('error', (err: Error)           => resolve({ stdout, stderr: err.message, code: 1 }))
-  })
-}
+import { readdirSync } from 'fs'
+import { spawnBinary, adaptPath } from '../wsl'
 
 function buildCliArgs(cfg: Record<string, unknown>): string[] {
   const args = ['endpoint']
   if (cfg.context)     args.push(`--context=${cfg.context}`)
   if (cfg.resource)    args.push(`--resource=${cfg.resource}`)
   if (cfg.operation)   args.push(`--operation=${cfg.operation}`)
-  if (cfg.projectPath) args.push(`--project=${cfg.projectPath}`)
+  // Translate WSL UNC path to Linux path for the C++ binary
+  if (cfg.projectPath) args.push(`--project=${adaptPath(cfg.projectPath as string)}`)
   if (Array.isArray(cfg.fields) && cfg.fields.length > 0) {
     const fieldStr = (cfg.fields as Array<{ name: string; phpType: string; nullable: boolean }>)
       .map(f => `${f.name}:${f.phpType}${f.nullable ? '?' : ''}`)
@@ -61,19 +43,19 @@ export interface GeneratedFile {
 }
 
 export function registerEndpointHandlers(): void {
-  ipcMain.handle('endpoints:list-contexts', (_event: IpcMainInvokeEvent, projectPath: string) => {
-    const dir = join(projectPath, 'back', 'app', 'Contexts')
-    if (!existsSync(dir)) return []
+  ipcMain.handle('endpoints:list-contexts', async (_event: IpcMainInvokeEvent, projectPath: string) => {
+    // For WSL paths, list via wsl.exe ls; for local paths use readdirSync
+    const { listDirEntries } = await import('../wsl')
+    const contextsPath = `${projectPath}/back/app/Contexts`
     try {
-      return readdirSync(dir, { withFileTypes: true })
-        .filter((d: import('fs').Dirent) => d.isDirectory())
-        .map((d: import('fs').Dirent) => d.name)
+      const entries = await listDirEntries(contextsPath)
+      return entries.filter(e => e.isDir).map(e => e.name)
     } catch { return [] }
   })
 
   ipcMain.handle('endpoints:preview', async (_event: IpcMainInvokeEvent, cfg: Record<string, unknown>) => {
     const args   = [...buildCliArgs(cfg), '--preview']
-    const result = await runBinary(args)
+    const result = await spawnBinary((cfg.projectPath as string) ?? '.', args)
     if (result.code !== 0) return { success: false, error: result.stderr || result.stdout }
     try { return { success: true, files: JSON.parse(result.stdout) } }
     catch { return { success: false, error: result.stdout || result.stderr } }
@@ -81,7 +63,7 @@ export function registerEndpointHandlers(): void {
 
   ipcMain.handle('endpoints:generate', async (_event: IpcMainInvokeEvent, cfg: Record<string, unknown>) => {
     const args   = [...buildCliArgs(cfg), '--generate']
-    const result = await runBinary(args)
+    const result = await spawnBinary((cfg.projectPath as string) ?? '.', args)
     if (result.code !== 0) return { success: false, error: result.stderr || result.stdout }
     try { return JSON.parse(result.stdout) }
     catch { return { success: false, error: result.stdout || result.stderr } }

@@ -1,23 +1,15 @@
 import { ipcMain } from 'electron'
-import { spawn } from 'child_process'
-import { join } from 'path'
+import { spawnBinary } from '../wsl'
 
-function binaryPath(): string {
-  return join(process.env.NODE_ENV === 'development'
-    ? join(__dirname, '../../../bin')
-    : process.resourcesPath,
-    'scaffold_zeus')
-}
+// DB is always local (~/.auxilius/auxilius.db) regardless of project path
+const DB_SENTINEL = '.'
 
 function runDb(args: string[]): Promise<unknown> {
   return new Promise((resolve, reject) => {
-    let out = ''
-    const proc = spawn(binaryPath(), ['db', ...args])
-    proc.stdout.on('data', (d: Buffer) => { out += d.toString() })
-    proc.stderr.on('data', (d: Buffer) => { out += d.toString() })
-    proc.on('close', () => {
-      try { resolve(JSON.parse(out.trim())) }
-      catch { reject(new Error(out.trim())) }
+    spawnBinary(DB_SENTINEL, ['db', ...args]).then(({ stdout, code }) => {
+      if (code !== 0) { reject(new Error(stdout.trim())); return }
+      try { resolve(JSON.parse(stdout.trim())) }
+      catch { reject(new Error(stdout.trim())) }
     })
   })
 }

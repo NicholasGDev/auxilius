@@ -4,6 +4,7 @@ import { exec } from 'child_process'
 import { join } from 'path'
 import { promisify } from 'util'
 import { existsSync } from 'fs'
+import { spawnBinary } from '../wsl'
 
 const execAsync = promisify(exec)
 
@@ -50,17 +51,10 @@ export function registerScaffoldHandlers(): void {
   })
 
   ipcMain.handle('scaffold:run', async (_event: IpcMainInvokeEvent, targetDir: string) => {
-    const binaryPath = getBinaryPath()
-    if (!existsSync(binaryPath))
-      return { success: false, error: 'Binário não compilado. Execute a compilação primeiro.' }
-    if (!existsSync(targetDir))
-      return { success: false, error: `Diretório não encontrado: ${targetDir}` }
-    try {
-      const { stdout, stderr } = await execAsync(`"${binaryPath}" scaffold "${targetDir}"`)
-      return { success: true, stdout, stderr }
-    } catch (err: any) {
-      return { success: false, error: err.message, stderr: err.stderr ?? '' }
-    }
+    const { stdout, stderr, code } = await spawnBinary(targetDir, ['scaffold', targetDir])
+    return code === 0
+      ? { success: true, stdout, stderr }
+      : { success: false, error: stderr || stdout, stderr }
   })
 }
 
