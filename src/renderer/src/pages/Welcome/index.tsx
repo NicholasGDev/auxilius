@@ -11,10 +11,12 @@ export const WelcomePage: React.FC<Props> = ({ onProjectSelected }) => {
   const [newError, setNewError]       = useState('')
   const [existingError, setExistingError] = useState('')
 
+  const isValidPath = (p: string) => p.startsWith('/') || /^\\\\wsl/i.test(p)
+
   const handleNew = () => {
     const p = newPath.trim()
     if (!p) { setNewError('Informe o caminho do diretório'); return }
-    if (!p.startsWith('/')) { setNewError('Use um caminho absoluto (ex: /root/projetos/zeus)'); return }
+    if (!isValidPath(p)) { setNewError('Use /root/projetos/zeus ou \\\\wsl.localhost\\Ubuntu\\root\\projetos\\zeus'); return }
     setNewError('')
     onProjectSelected(p)
   }
@@ -22,7 +24,7 @@ export const WelcomePage: React.FC<Props> = ({ onProjectSelected }) => {
   const handleExisting = () => {
     const p = existingPath.trim()
     if (!p) { setExistingError('Informe o caminho do diretório'); return }
-    if (!p.startsWith('/')) { setExistingError('Use um caminho absoluto WSL (ex: /root/projetos/zeus)'); return }
+    if (!isValidPath(p)) { setExistingError('Use /root/projetos/zeus ou \\\\wsl.localhost\\Ubuntu\\root\\projetos\\zeus'); return }
     setExistingError('')
     onProjectSelected(p)
   }
@@ -71,7 +73,7 @@ export const WelcomePage: React.FC<Props> = ({ onProjectSelected }) => {
               <input
                 className={`field-input${newError ? ' field-input--error' : ''}`}
                 type="text"
-                placeholder="/root/projetos/zeus-retail"
+                placeholder="/root/projetos/zeus-retail ou \\wsl.localhost\Ubuntu\root\projetos"
                 value={newPath}
                 onChange={e => { setNewPath(e.target.value); setNewError('') }}
                 onKeyDown={e => e.key === 'Enter' && handleNew()}
@@ -100,7 +102,7 @@ export const WelcomePage: React.FC<Props> = ({ onProjectSelected }) => {
               <input
                 className={`field-input${existingError ? ' field-input--error' : ''}`}
                 type="text"
-                placeholder="/root/projetos/zeus-retail-evolution"
+                placeholder="/root/projetos/zeus-retail-evolution ou \\wsl.localhost\Ubuntu\root\projetos"
                 value={existingPath}
                 onChange={e => { setExistingPath(e.target.value); setExistingError('') }}
                 onKeyDown={e => e.key === 'Enter' && handleExisting()}
