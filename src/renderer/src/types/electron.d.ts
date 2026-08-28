@@ -56,6 +56,9 @@ declare global {
       dialog: {
         openDirectory():                  Promise<string | null>
       }
+      fs: {
+        listDir(dirPath: string):         Promise<Array<{ name: string; path: string; isDir: boolean }>>
+      }
       environment: {
         check():                                    Promise<EnvironmentStatus>
         setupWslRoot():                             Promise<CommandResult>

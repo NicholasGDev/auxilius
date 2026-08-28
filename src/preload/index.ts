@@ -9,6 +9,10 @@ const auxilius = {
   dialog: {
     openDirectory: (): Promise<string | null> => ipcRenderer.invoke('dialog:open-directory'),
   },
+  fs: {
+    listDir: (dirPath: string): Promise<Array<{ name: string; path: string; isDir: boolean }>> =>
+      ipcRenderer.invoke('fs:list-dir', dirPath),
+  },
   environment: {
     check:          ()                             => ipcRenderer.invoke('environment:check'),
     setupWslRoot:   ()                             => ipcRenderer.invoke('environment:setup-wsl-root'),
