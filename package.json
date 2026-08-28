@@ -14,7 +14,8 @@
     "install:universal": "bash scripts/install.sh",
     "installer:build": "bash installer/build.sh",
     "installer:linux": "bash installer/build.sh linux",
-    "installer:windows": "bash installer/build.sh windows"
+    "installer:windows": "bash installer/build.sh windows",
+    "installer:linux:deb": "bash installer/build.sh linux-deb"
   },
   "dependencies": {
     "@giro-ds/react": "^9.0.0",
