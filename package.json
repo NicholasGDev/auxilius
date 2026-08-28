@@ -46,6 +46,10 @@
         "deb"
       ]
     },
+    "win": {
+      "icon": "resources/icon.ico",
+      "target": [{"target": "dir", "arch": ["x64"]}]
+    },
     "extraResources": [
       {
         "from": "bin/scaffold_zeus",

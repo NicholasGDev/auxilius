@@ -122,6 +122,9 @@ jobs:
       - name: Build Electron app
         run: npm run build
 
+      - name: Empacotar app Electron para Windows (unpacked)
+        run: npx electron-builder --win --dir
+
       - name: Instalar NSIS
         run: |
           choco install nsis -y

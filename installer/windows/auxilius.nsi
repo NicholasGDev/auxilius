@@ -7,7 +7,7 @@ Unicode True
 
 !define APP_NAME        "Auxilius"
 !define APP_VERSION     "0.1.0"
-!define APP_PUBLISHER   "Zanthus Tecnologia"
+!define APP_PUBLISHER   "NicholasGDev"
 !define APP_URL         "https://github.com/NicholasGDev/auxilius"
 !define APP_DESCRIPTION "Zeus Retail Evolution — Developer Toolbox"
 !define UNINSTALL_KEY   "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}"
@@ -48,7 +48,7 @@ Section "Auxilius (obrigatório)" SecMain
   SetOutPath "$INSTDIR"
 
   ; Copy all app files
-  File /r "..\..\dist\win\*.*"
+  File /r "..\..\dist\win-unpacked\*.*"
 
   ; Write install location to registry
   WriteRegStr HKCU "${INSTALL_REG_KEY}" "InstallDir" "$INSTDIR"
