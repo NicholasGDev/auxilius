@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { FolderIcon } from '../../components/common/FolderIcon'
 
 interface Props {
   onProjectSelected: (path: string) => void

@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
+import { FolderIcon } from '../common/FolderIcon'
 
 interface TreeNode {
   name: string
@@ -17,7 +18,7 @@ interface FileTreeProps {
 
 // Icon by file extension
 function fileIcon(name: string, isDir: boolean, expanded: boolean): string {
-  if (isDir) return expanded ? '📂' : '📁'
+  if (isDir) return expanded ? '' : ''
   const ext = name.split('.').pop()?.toLowerCase() ?? ''
   const map: Record<string, string> = {
     php: '🐘', ts: '📘', tsx: '📘', js: '📙', jsx: '📙',
@@ -108,7 +109,7 @@ const FileTree: React.FC<FileTreeProps> = ({ rootPath }) => {
         title={rootPath}
       >
         <span className="tree-chevron">{rootState?.expanded ? '▾' : '▸'}</span>
-        <span className="tree-icon">{rootState?.expanded ? '📂' : '📁'}</span>
+        <span className="tree-icon"><FolderIcon open={rootState?.expanded} size={15} /></span>
         <span className="tree-name tree-root-name">{rootName}</span>
       </div>
       {rootState?.expanded && rootState.children && renderNodes(rootState.children, 1)}
