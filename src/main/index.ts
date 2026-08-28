@@ -33,8 +33,17 @@ function createWindow(): void {
   if (isDev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+    const rendererPath = join(__dirname, '../renderer/index.html')
+    mainWindow.loadFile(rendererPath).catch(() => {
+      mainWindow.webContents.openDevTools()
+    })
   }
+
+  // open DevTools on renderer crash to expose the actual error
+  mainWindow.webContents.on('did-fail-load', (_e, code, desc) => {
+    console.error('Renderer failed to load:', code, desc)
+    mainWindow.webContents.openDevTools()
+  })
 }
 
 app.whenReady().then(() => {

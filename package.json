@@ -56,8 +56,8 @@
     },
     "extraResources": [
       {
-        "from": "bin/scaffold_zeus",
-        "to": "scaffold_zeus"
+        "from": "bin/scaffold_zeus*",
+        "to": "."
       },
       {
         "from": "cpp",

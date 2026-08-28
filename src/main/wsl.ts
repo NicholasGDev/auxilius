@@ -50,7 +50,7 @@ export function resolveBinary(projectPath: string): { cmd: string; prefix: strin
   if (process.platform !== 'win32') {
     // Linux/macOS: run directly
     const bin = process.env.NODE_ENV === 'development'
-      ? join(__dirname, '../../../bin/scaffold_zeus')
+      ? join(__dirname, '../../bin/scaffold_zeus')
       : join(process.resourcesPath, 'scaffold_zeus')
     return { cmd: bin, prefix: [] }
   }

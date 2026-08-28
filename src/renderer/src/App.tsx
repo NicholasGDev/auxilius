@@ -11,10 +11,10 @@ const App: React.FC = () => {
 
   // Restore last project from SQLite on startup
   useEffect(() => {
-    window.auxilius.db.get('projectPath').then(({ value }) => {
-      if (value) setProjectPath(value)
-      setReady(true)
-    })
+    window.auxilius.db.get('projectPath')
+      .then(({ value }) => { if (value) setProjectPath(value) })
+      .catch(() => { /* binary unavailable, start fresh */ })
+      .finally(() => setReady(true))
   }, [])
 
   const handleProjectSelected = (path: string) => {
