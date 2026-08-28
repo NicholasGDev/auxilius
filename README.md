@@ -384,3 +384,4 @@ O GitHub Actions:
 | Scaffold        | `/scaffold`  | Gerar estrutura completa do projeto Zeus DDD           |
 | Endpoints       | `/endpoints` | Gerar artefatos PHP DDD (preview tipo VS Code)         |
 
+# auxilius
