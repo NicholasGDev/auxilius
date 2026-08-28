@@ -131,7 +131,6 @@ jobs:
 
       - name: Gerar instalador .exe (NSIS)
         run: |
-          mkdir -p dist
           & "C:\Program Files (x86)\NSIS\makensis.exe" `
             /DAPP_VERSION=${{ github.ref_name }} `
             installer\windows\auxilius.nsi
