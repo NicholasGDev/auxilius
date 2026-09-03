@@ -52,6 +52,10 @@ Section "Auxilius (obrigatório)" SecMain
 
   SetOutPath "$INSTDIR"
 
+  ; Encerra instância em execução para evitar erro de arquivo em uso ao atualizar
+  ExecWait '"$SYSDIR\taskkill.exe" /F /IM Auxilius.exe /T'
+  Sleep 500
+
   ; Copy all app files
   File /r "..\..\dist\win-unpacked\*.*"
 
@@ -104,6 +108,10 @@ SectionEnd
 
 ; ── Uninstall ─────────────────────────────────────────────────────────────────
 Section "Uninstall"
+
+  ; Encerra instância em execução para evitar erro de arquivo em uso
+  ExecWait '"$SYSDIR\taskkill.exe" /F /IM Auxilius.exe /T'
+  Sleep 500
 
   ; Remove scaffold_zeus from WSL
   ExecWait 'wsl.exe -d Ubuntu -u root -- bash -c "rm -f /usr/local/bin/scaffold_zeus"'
