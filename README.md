@@ -8,7 +8,7 @@
 
 ## 📥 Instalação / Download
 
-> Todas as versões disponíveis em: **[Releases do GitHub](https://github.com/NicholasGDev/auxilius/releases/latest)**
+> Todas as versões disponíveis em: **[Releases do GitHub](https://github.com/nicholasDeveloperPhp/zanthus-auxilius-manager-retail/releases/latest)**
 
 ### 🐧 Linux — Pacote `.deb` (Ubuntu / Debian) ✅ Recomendado
 
@@ -16,7 +16,7 @@ Instalável e desinstalável pelo sistema (apt / dpkg):
 
 ```bash
 # 1. Baixar o pacote
-wget https://github.com/NicholasGDev/auxilius/releases/latest/download/auxilius_0.1.0_amd64.deb
+wget https://github.com/nicholasDeveloperPhp/zanthus-auxilius-manager-retail/releases/latest/download/auxilius_0.1.0_amd64.deb
 
 # 2. Instalar
 sudo dpkg -i auxilius_0.1.0_amd64.deb
@@ -50,7 +50,7 @@ Para distribuições que não usam `.deb` (Fedora, Arch, etc.) ou preferência p
 
 ```bash
 # 1. Baixar e extrair
-wget https://github.com/NicholasGDev/auxilius/releases/latest/download/auxilius-installer-linux-x64.tar.gz
+wget https://github.com/nicholasDeveloperPhp/zanthus-auxilius-manager-retail/releases/latest/download/auxilius-installer-linux-x64.tar.gz
 tar -xzf auxilius-installer-linux-x64.tar.gz
 
 # 2. Executar o assistente (requer GTK3)
@@ -68,7 +68,7 @@ Registra no **Painel de Controle → Programas e Recursos** para desinstalação
 
 ```
 1. Baixar:
-   https://github.com/NicholasGDev/auxilius/releases/latest/download/auxilius-setup-0.1.0.exe
+   https://github.com/nicholasDeveloperPhp/zanthus-auxilius-manager-retail/releases/latest/download/auxilius-setup-0.1.0.exe
 
 2. Executar auxilius-setup-0.1.0.exe como administrador (recomendado)
 
@@ -355,7 +355,7 @@ git push origin v0.1.0
 O GitHub Actions:
 1. Compila `scaffold_zeus` + instalador GTK3 + `.deb` no runner `ubuntu-22.04`
 2. Compila `scaffold_zeus.exe` + `.exe` NSIS no runner `windows-latest`
-3. Cria uma [GitHub Release](https://github.com/NicholasGDev/auxilius/releases) com os 3 arquivos para download
+3. Cria uma [GitHub Release](https://github.com/nicholasDeveloperPhp/zanthus-auxilius-manager-retail/releases) com os 3 arquivos para download
 
 ---
 

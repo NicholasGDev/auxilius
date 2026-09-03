@@ -7,7 +7,7 @@
 #   CODE_SIGN_PASS      = a senha escolhida abaixo
 
 param(
-    [string]$Subject  = "CN=Auxilius, O=NicholasGDev, C=BR",
+    [string]$Subject  = "CN=Auxilius, O=nicholasDeveloperPhp, C=BR",
     [string]$Password = "Auxilius@2024!",
     [string]$OutPfx   = "auxilius-codesign.pfx"
 )
