@@ -89,6 +89,8 @@ jobs:
   build-windows:
     runs-on: windows-latest
     needs: [build-linux]
+    env:
+      HAS_CODE_SIGN_CERT: ${{ secrets.CODE_SIGN_CERT_B64 != '' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -125,7 +127,7 @@ jobs:
           & "C:\Program Files (x86)\NSIS\makensis.exe" installer\windows\auxilius.nsi
 
       - name: Assinar instalador com certificado
-        if: ${{ secrets.CODE_SIGN_CERT_B64 != '' }}
+        if: ${{ env.HAS_CODE_SIGN_CERT == 'true' }}
         env:
           CODE_SIGN_CERT: ${{ secrets.CODE_SIGN_CERT_B64 }}
           CODE_SIGN_PASS: ${{ secrets.CODE_SIGN_PASS }}
