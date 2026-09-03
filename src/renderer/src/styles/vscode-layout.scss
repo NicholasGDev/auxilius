@@ -1,16 +1,17 @@
-// VSCode-inspired layout tokens
-$vsc-bg:           #1e1e1e;
-$vsc-sidebar-bg:   #252526;
-$vsc-activity-bg:  #333333;
-$vsc-panel-bg:     #1e1e1e;
-$vsc-editor-bg:    #1e1e1e;
-$vsc-statusbar-bg: #007acc;
-$vsc-border:       #3c3c3c;
-$vsc-text:         #cccccc;
-$vsc-text-dim:     #858585;
-$vsc-accent:       #007acc;
-$vsc-hover:        rgba(255,255,255,0.07);
-$vsc-active-item:  rgba(255,255,255,0.12);
+// Light pastel layout tokens — Giro DS only ships light/white components,
+// so the whole shell must stay light to avoid invisible text/icons.
+$vsc-bg:           #f7f8fc;
+$vsc-sidebar-bg:   #eef1f8;
+$vsc-activity-bg:  #e4e9f7;
+$vsc-panel-bg:     #ffffff;
+$vsc-editor-bg:    #ffffff;
+$vsc-statusbar-bg: #dbe4f7;
+$vsc-border:       #dfe3ee;
+$vsc-text:         #33415c;
+$vsc-text-dim:     #7c88a1;
+$vsc-accent:       #6c8ee0;
+$vsc-hover:        rgba(108,142,224,0.08);
+$vsc-active-item:  rgba(108,142,224,0.16);
 $vsc-activity-w:   48px;
 $vsc-sidebar-w:    240px;
 $vsc-statusbar-h:  22px;
@@ -74,15 +75,14 @@ $vsc-statusbar-h:  22px;
     .activity-tooltip {
       position: absolute;
       left: calc(100% + 8px);
-      background: #252526;
-      color: $vsc-text;
+      background: #33415c;
+      color: #ffffff;
       font-size: 0.75rem;
       padding: 4px 8px;
       border-radius: 3px;
       white-space: nowrap;
       pointer-events: none;
       opacity: 0;
-      border: 1px solid $vsc-border;
       z-index: 100;
       transition: opacity 0.1s 0.4s;
     }
@@ -144,7 +144,7 @@ $vsc-statusbar-h:  22px;
 
     &::-webkit-scrollbar { width: 8px; }
     &::-webkit-scrollbar-track { background: transparent; }
-    &::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
+    &::-webkit-scrollbar-thumb { background: #c3cbdd; border-radius: 4px; }
   }
 }
 
@@ -154,11 +154,11 @@ $vsc-statusbar-h:  22px;
   padding: 4px 0;
   user-select: none;
 
-  .tree-item {
+  .tree-row {
     display: flex;
     align-items: center;
     gap: 4px;
-    padding: 1px 8px 1px 0;
+    padding: 3px 8px 3px 0;
     font-size: 0.8125rem;
     cursor: pointer;
     color: $vsc-text;
@@ -168,16 +168,19 @@ $vsc-statusbar-h:  22px;
     min-height: 22px;
 
     &:hover { background: $vsc-hover; }
-    &.selected { background: #094771; }
+    &.selected { background: $vsc-active-item; }
 
-    .tree-indent { flex-shrink: 0; }
-    .tree-arrow  { flex-shrink: 0; width: 16px; color: $vsc-text-dim; font-size: 0.65rem; }
-    .tree-icon   { flex-shrink: 0; font-size: 0.8rem; }
-    .tree-name   { overflow: hidden; text-overflow: ellipsis; }
+    .tree-chevron { flex-shrink: 0; width: 14px; text-align: center; color: $vsc-text-dim; font-size: 0.65rem; }
+    .tree-icon    { flex-shrink: 0; font-size: 0.85rem; display: inline-flex; }
+    .tree-name    { overflow: hidden; text-overflow: ellipsis; color: $vsc-text; }
   }
 
-  .tree-item-dir { color: $vsc-text; }
-  .tree-item-file { color: #d4d4d4; }
+  .tree-root {
+    font-weight: 600;
+    .tree-root-name { color: $vsc-text; }
+  }
+
+  .tree-dir .tree-name { color: $vsc-text; }
 }
 
 // ── Editor Area ───────────────────────────────────────────────────────────────
@@ -185,7 +188,7 @@ $vsc-statusbar-h:  22px;
 .vsc-editor {
   grid-row: 1;
   grid-column: 3;
-  background: #1e1e1e;
+  background: $vsc-editor-bg;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -193,14 +196,14 @@ $vsc-statusbar-h:  22px;
   .editor-tabs {
     display: flex;
     align-items: center;
-    background: #2d2d2d;
+    background: $vsc-sidebar-bg;
     border-bottom: 1px solid $vsc-border;
     height: 35px;
     overflow-x: auto;
     flex-shrink: 0;
 
     &::-webkit-scrollbar { height: 3px; }
-    &::-webkit-scrollbar-thumb { background: #555; }
+    &::-webkit-scrollbar-thumb { background: #c3cbdd; }
 
     .editor-tab {
       display: flex;
@@ -236,7 +239,7 @@ $vsc-statusbar-h:  22px;
 
     &::-webkit-scrollbar { width: 10px; }
     &::-webkit-scrollbar-track { background: $vsc-bg; }
-    &::-webkit-scrollbar-thumb { background: #555; border-radius: 5px; }
+    &::-webkit-scrollbar-thumb { background: #c3cbdd; border-radius: 5px; }
   }
 }
 
@@ -250,7 +253,7 @@ $vsc-statusbar-h:  22px;
   align-items: center;
   height: $vsc-statusbar-h;
   font-size: 0.72rem;
-  color: #fff;
+  color: $vsc-text;
   overflow: hidden;
 
   .vsc-status-item {
@@ -260,42 +263,12 @@ $vsc-statusbar-h:  22px;
     align-items: center;
     cursor: default;
     white-space: nowrap;
-    &:hover { background: rgba(255,255,255,0.12); }
+    &:hover { background: rgba(51,65,92,0.08); }
   }
 
   .vsc-status-branch { font-weight: 500; }
   .vsc-status-spacer { flex: 1; }
-  .vsc-status-path   { color: rgba(255,255,255,0.8); }
-}
-
-// ── VSCode-themed content (overrides for light components) ──────────────────
-
-.vsc-editor .editor-content {
-  // Giro DS card overrides for dark editor
-  .form-section {
-    background: #252526;
-    border-color: $vsc-border;
-    color: $vsc-text;
-
-    h3 { color: $vsc-text; }
-  }
-
-  .status-card {
-    background: #252526;
-    border-color: $vsc-border;
-    .status-card-title { color: $vsc-text-dim; }
-    .status-card-value { color: $vsc-text; }
-  }
-
-  .page-header {
-    h2 { color: $vsc-text; }
-    p  { color: $vsc-text-dim; }
-  }
-
-  .check-item {
-    border-color: $vsc-border;
-    .check-label { color: $vsc-text; }
-  }
+  .vsc-status-path   { color: $vsc-text-dim; }
 }
 
 // ── Nav section labels in sidebar ────────────────────────────────────────────

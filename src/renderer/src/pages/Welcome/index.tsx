@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { FolderIcon } from '../../components/common/FolderIcon'
+import logo from '../../assets/logo.png'
 
 type View = 'question' | 'existing' | 'onboarding'
 type StepStatus = 'pending' | 'running' | 'done' | 'error' | 'skip'
@@ -144,11 +145,11 @@ export const WelcomePage: React.FC<Props> = ({ onProjectSelected }) => {
 
   const stepIcon = (id: string) => {
     switch (statuses[id]) {
-      case 'done':    return <span style={{ color: '#4ec9b0' }}>✓</span>
-      case 'skip':    return <span style={{ color: '#555' }}>—</span>
-      case 'error':   return <span style={{ color: '#f48771' }}>✗</span>
-      case 'running': return <span style={{ color: '#38bdf8' }}>⟳</span>
-      default:        return <span style={{ color: '#444' }}>○</span>
+      case 'done':    return <span style={{ color: '#15803d' }}>✓</span>
+      case 'skip':    return <span style={{ color: '#9aa4ba' }}>—</span>
+      case 'error':   return <span style={{ color: '#dc2626' }}>✗</span>
+      case 'running': return <span style={{ color: '#1d4ed8' }}>⟳</span>
+      default:        return <span style={{ color: '#c3cbdd' }}>○</span>
     }
   }
 
@@ -166,16 +167,7 @@ export const WelcomePage: React.FC<Props> = ({ onProjectSelected }) => {
   const hero = (
     <div className="welcome-hero">
       <div className="welcome-logo">
-        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="32" cy="32" r="32" fill="#0f172a" />
-          <text x="50%" y="56%" dominantBaseline="middle" textAnchor="middle"
-            fontFamily="monospace" fontSize="30" fontWeight="bold" fill="#38bdf8">
-            {'{}'}
-          </text>
-          <ellipse cx="32" cy="10" rx="14" ry="4" stroke="#38bdf8" strokeWidth="2" fill="none" />
-          <path d="M10 32 Q4 24 10 20 Q16 28 18 32 Z" fill="#1e40af" opacity="0.8" />
-          <path d="M54 32 Q60 24 54 20 Q48 28 46 32 Z" fill="#1e40af" opacity="0.8" />
-        </svg>
+        <img src={logo} width="64" height="64" alt="Auxilius" style={{ borderRadius: 14 }} />
       </div>
       <h1 className="welcome-title">Auxilius</h1>
       <p className="welcome-subtitle">Zeus Retail Evolution — Developer Toolbox</p>
@@ -187,7 +179,7 @@ export const WelcomePage: React.FC<Props> = ({ onProjectSelected }) => {
     return (
       <div className="welcome-page">
         {hero}
-        <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '1rem', marginBottom: 32, textAlign: 'center' }}>
+        <p style={{ color: 'rgba(51,65,92,0.6)', fontSize: '1rem', marginBottom: 32, textAlign: 'center' }}>
           Você já tem o projeto Zeus Retail Evolution configurado no WSL?
         </p>
         <div className="welcome-cards" style={{ maxWidth: 560 }}>

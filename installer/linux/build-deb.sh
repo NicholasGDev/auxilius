@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # Build a .deb package for Auxilius
-# Install:   dpkg -i dist/auxilius_0.1.0_amd64.deb
+# Install:   dpkg -i dist/auxilius_0.1.2_amd64.deb
 # Uninstall: dpkg -r auxilius   OR   apt remove auxilius
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 PKG_NAME="auxilius"
-PKG_VER="0.1.0"
+PKG_VER="0.1.2"
 PKG_ARCH="amd64"
 PKG_DIR="$ROOT/dist/deb/${PKG_NAME}_${PKG_VER}_${PKG_ARCH}"
 OUT_DEB="$ROOT/dist/${PKG_NAME}_${PKG_VER}_${PKG_ARCH}.deb"

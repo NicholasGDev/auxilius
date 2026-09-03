@@ -1,6 +1,6 @@
 {
   "name": "auxilius",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Developer toolbox for Zeus Retail Evolution",
   "main": "out/main/index.js",
   "scripts": {
@@ -45,6 +45,7 @@
       "package.json"
     ],
     "linux": {
+      "icon": "resources/icon.png",
       "target": [
         "AppImage",
         "deb"

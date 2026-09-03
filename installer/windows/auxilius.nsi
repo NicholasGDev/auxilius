@@ -7,7 +7,7 @@ Unicode True
 
 !define APP_NAME        "Auxilius"
 !ifndef APP_VERSION
-  !define APP_VERSION     "0.1.1"
+  !define APP_VERSION     "0.1.2"
 !endif
 !define APP_PUBLISHER   "nicholasDeveloperPhp"
 !define APP_URL         "https://github.com/nicholasDeveloperPhp/zanthus-auxilius-manager-retail"

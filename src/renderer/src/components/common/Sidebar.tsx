@@ -1,5 +1,6 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
+import logo from '../../assets/logo.png'
 
 const NAV = [
   { to: '/home',      icon: '⬡', label: 'Dashboard' },
@@ -17,14 +18,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ projectPath, onClearProject })
   <aside className="sidebar">
     <div className="sidebar-brand">
       <div className="sidebar-logo">
-        <svg width="28" height="28" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="32" cy="32" r="32" fill="#0f172a" />
-          <text x="50%" y="56%" dominantBaseline="middle" textAnchor="middle"
-            fontFamily="monospace" fontSize="30" fontWeight="bold" fill="#38bdf8">
-            {'{}'}
-          </text>
-          <ellipse cx="32" cy="10" rx="12" ry="3.5" stroke="#38bdf8" strokeWidth="1.8" fill="none" />
-        </svg>
+        <img src={logo} width="28" height="28" alt="Auxilius" style={{ borderRadius: 6 }} />
       </div>
       <div>
         <div className="brand-title">Auxilius</div>
@@ -51,6 +45,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ projectPath, onClearProject })
       <button className="project-change" onClick={onClearProject}>Trocar projeto</button>
     </div>
 
-    <div className="sidebar-footer">v0.1.0</div>
+    <div className="sidebar-footer">v0.1.2</div>
   </aside>
 )

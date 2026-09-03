@@ -2,8 +2,8 @@
 # Build Auxilius installers
 #
 # Linux  → bin/auxilius-installer     (assistente gráfico GTK3 via wxWidgets)
-#         dist/auxilius_0.1.0_amd64.deb  (pacote instalável/desinstalável via dpkg/apt)
-# Windows → dist/auxilius-setup-0.1.0.exe  (NSIS — registra no Painel de Controle)
+#         dist/auxilius_0.1.2_amd64.deb  (pacote instalável/desinstalável via dpkg/apt)
+# Windows → dist/auxilius-setup-0.1.2.exe  (NSIS — registra no Painel de Controle)
 #
 # Uso:
 #   bash installer/build.sh              # detecta plataforma
@@ -43,7 +43,7 @@ build_windows() {
     mkdir -p "$ROOT/dist"
     echo "› Gerando instalador Windows (.exe) com NSIS..."
     makensis "$ROOT/installer/windows/auxilius.nsi"
-    echo "✓ Instalador Windows: $ROOT/dist/auxilius-setup-0.1.0.exe"
+    echo "✓ Instalador Windows: $ROOT/dist/auxilius-setup-0.1.2.exe"
     echo "  Registra e desinstala pelo Painel de Controle > Programas"
 }
 

@@ -125,7 +125,7 @@ jobs:
           & "C:\Program Files (x86)\NSIS\makensis.exe" installer\windows\auxilius.nsi
 
       - name: Assinar instalador com certificado
-        if: ${{ env.CODE_SIGN_CERT != '' }}
+        if: ${{ secrets.CODE_SIGN_CERT_B64 != '' }}
         env:
           CODE_SIGN_CERT: ${{ secrets.CODE_SIGN_CERT_B64 }}
           CODE_SIGN_PASS: ${{ secrets.CODE_SIGN_PASS }}
@@ -136,9 +136,10 @@ jobs:
             Where-Object { $_.FullName -like "*x64*" } |
             Sort-Object LastWriteTime -Descending |
             Select-Object -First 1 -ExpandProperty FullName
+          $setupExe = Get-ChildItem dist\auxilius-setup-*.exe | Select-Object -First 1 -ExpandProperty FullName
           & $signtool sign /fd SHA256 /f cert.pfx /p $env:CODE_SIGN_PASS `
             /tr http://timestamp.digicert.com /td SHA256 `
-            dist\auxilius-setup-0.1.0.exe
+            $setupExe
           Remove-Item cert.pfx
 
       - name: Upload artefatos Windows

@@ -29,15 +29,15 @@ function fileIcon(name: string, isDir: boolean, expanded: boolean): string {
 }
 
 function fileColor(name: string, isDir: boolean): string {
-  if (isDir) return 'var(--vsc-dir-color, #dcb67a)'
+  if (isDir) return 'var(--vsc-dir-color, #c9994f)'
   const ext = name.split('.').pop()?.toLowerCase() ?? ''
   const map: Record<string, string> = {
-    php: '#b5cea8', ts: '#4ec9b0', tsx: '#4ec9b0',
-    js: '#dcdcaa', jsx: '#dcdcaa',
-    scss: '#ce9178', css: '#ce9178',
-    json: '#9cdcfe', md: '#cccccc', sh: '#c586c0',
+    php: '#4d7c3a', ts: '#0f766e', tsx: '#0f766e',
+    js: '#a16207', jsx: '#a16207',
+    scss: '#b45309', css: '#b45309',
+    json: '#1d4ed8', md: '#33415c', sh: '#7e22ce',
   }
-  return map[ext] ?? '#cccccc'
+  return map[ext] ?? '#33415c'
 }
 
 const FileTree: React.FC<FileTreeProps> = ({ rootPath }) => {

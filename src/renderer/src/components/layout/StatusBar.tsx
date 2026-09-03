@@ -17,7 +17,7 @@ export const StatusBar: React.FC<StatusBarProps> = ({ projectPath, activeSection
       )}
       <span className="vsc-status-spacer" />
       <span className="vsc-status-item">{activeSection}</span>
-      <span className="vsc-status-item">Auxilius v0.1.0</span>
+      <span className="vsc-status-item">Auxilius v0.1.2</span>
     </div>
   )
 }

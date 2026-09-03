@@ -12,8 +12,8 @@ body,
 #root {
   height: 100%;
   font-family: var(--font-family-primary, 'Figtree', sans-serif);
-  background-color: #1e1e1e;
-  color: #cccccc;
+  background-color: #f7f8fc;
+  color: #33415c;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -216,7 +216,7 @@ body,
 
 .welcome-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+  background: linear-gradient(135deg, #eef2ff 0%, #dbe9ff 50%, #eaf6ff 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -231,21 +231,20 @@ body,
 
   .welcome-logo {
     margin-bottom: 16px;
-    filter: drop-shadow(0 0 16px rgba(56, 189, 248, 0.4));
+    filter: drop-shadow(0 4px 16px rgba(108, 142, 224, 0.35));
   }
 
   .welcome-title {
     font-size: 2.5rem;
     font-weight: 800;
-    color: #ffffff;
+    color: #33415c;
     letter-spacing: -0.03em;
     margin-bottom: 8px;
-    text-shadow: 0 0 30px rgba(56, 189, 248, 0.3);
   }
 
   .welcome-subtitle {
     font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(51, 65, 92, 0.55);
     text-transform: uppercase;
     letter-spacing: 0.1em;
     font-weight: 400;
@@ -265,36 +264,36 @@ body,
 }
 
 .welcome-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(56, 189, 248, 0.2);
+  background: #ffffff;
+  border: 1px solid #dfe3ee;
   border-radius: 16px;
   padding: 28px 24px;
-  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 20px rgba(108, 142, 224, 0.1);
   display: flex;
   flex-direction: column;
   gap: 16px;
-  transition: border-color 0.2s, background 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
 
   &:hover {
-    border-color: rgba(56, 189, 248, 0.5);
-    background: rgba(255, 255, 255, 0.08);
+    border-color: #b7c6f2;
+    box-shadow: 0 8px 28px rgba(108, 142, 224, 0.18);
   }
 
   .card-icon {
     font-size: 1.75rem;
-    color: #38bdf8;
+    color: #6c8ee0;
   }
 
   .card-title {
     font-size: 1.125rem;
     font-weight: 700;
-    color: #ffffff;
+    color: #33415c;
     margin: 0;
   }
 
   .card-desc {
     font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.55);
+    color: #7c88a1;
     line-height: 1.5;
     margin: 0;
     flex: 1;
@@ -309,7 +308,7 @@ body,
   .field-label {
     font-size: 0.72rem;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.6);
+    color: #7c88a1;
     text-transform: uppercase;
     letter-spacing: 0.06em;
   }
@@ -322,21 +321,21 @@ body,
 
   .field-input {
     flex: 1;
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(56, 189, 248, 0.25);
+    background: #f7f8fc;
+    border: 1px solid #dfe3ee;
     border-radius: 8px;
-    color: #e2e8f0;
+    color: #33415c;
     font-size: 0.8rem;
     font-family: 'Courier New', monospace;
     padding: 10px 12px;
     outline: none;
     transition: border-color 0.15s, box-shadow 0.15s;
 
-    &::placeholder { color: rgba(255, 255, 255, 0.2); }
+    &::placeholder { color: #a7b0c3; }
 
     &:focus {
-      border-color: #38bdf8;
-      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+      border-color: #6c8ee0;
+      box-shadow: 0 0 0 3px rgba(108, 142, 224, 0.15);
     }
 
     &--error {
@@ -345,10 +344,10 @@ body,
   }
 
   .browse-btn {
-    background: rgba(56, 189, 248, 0.1);
-    border: 1px solid rgba(56, 189, 248, 0.25);
+    background: rgba(108, 142, 224, 0.1);
+    border: 1px solid rgba(108, 142, 224, 0.3);
     border-radius: 8px;
-    color: #38bdf8;
+    color: #6c8ee0;
     font-size: 1rem;
     padding: 0 12px;
     cursor: pointer;
@@ -356,14 +355,14 @@ body,
     flex-shrink: 0;
 
     &:hover {
-      background: rgba(56, 189, 248, 0.2);
-      border-color: #38bdf8;
+      background: rgba(108, 142, 224, 0.2);
+      border-color: #6c8ee0;
     }
   }
 
   .field-error {
     font-size: 0.72rem;
-    color: #f87171;
+    color: #dc2626;
   }
 }
 
@@ -381,27 +380,27 @@ body,
   &:active { transform: scale(0.98); }
 
   &--primary {
-    background: linear-gradient(135deg, #1d6fb8, #38bdf8);
+    background: linear-gradient(135deg, #6c8ee0, #8fb1f0);
     color: #ffffff;
   }
 
   &--secondary {
-    background: rgba(56, 189, 248, 0.15);
-    color: #38bdf8;
-    border: 1px solid rgba(56, 189, 248, 0.4);
+    background: rgba(108, 142, 224, 0.12);
+    color: #4f6cc4;
+    border: 1px solid rgba(108, 142, 224, 0.35);
   }
 }
 
 .welcome-footer {
   margin-top: 32px;
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.3);
+  color: rgba(51, 65, 92, 0.45);
   text-align: center;
 
   code {
     font-family: 'Courier New', monospace;
-    background: rgba(56, 189, 248, 0.1);
-    color: #38bdf8;
+    background: rgba(108, 142, 224, 0.12);
+    color: #4f6cc4;
     padding: 1px 5px;
     border-radius: 3px;
   }
@@ -410,18 +409,18 @@ body,
 // ── Onboarding wizard ─────────────────────────────────────────────────────────
 
 .wizard-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(56, 189, 248, 0.2);
+  background: #ffffff;
+  border: 1px solid #dfe3ee;
   border-radius: 16px;
   padding: 28px 28px 24px;
-  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 20px rgba(108, 142, 224, 0.1);
   width: 100%;
   max-width: 560px;
 
   h3 {
     font-size: 1rem;
     font-weight: 700;
-    color: #ffffff;
+    color: #33415c;
     margin-bottom: 20px;
   }
 }
@@ -430,7 +429,7 @@ body,
   display: flex;
   flex-direction: column;
   padding: 10px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid #eef1f8;
 
   &:last-child { border-bottom: none; }
 
@@ -454,12 +453,12 @@ body,
     .step-label {
       font-size: 0.85rem;
       font-weight: 600;
-      color: #e2e8f0;
+      color: #33415c;
     }
 
     .step-desc {
       font-size: 0.7rem;
-      color: rgba(255, 255, 255, 0.35);
+      color: #9aa4ba;
       font-family: 'Courier New', monospace;
       white-space: nowrap;
       overflow: hidden;
@@ -473,10 +472,10 @@ body,
     border-radius: 999px;
     flex-shrink: 0;
 
-    &.s-done    { background: rgba(78, 201, 176, 0.15); color: #4ec9b0; }
-    &.s-error   { background: rgba(244, 135, 113, 0.15); color: #f48771; }
-    &.s-running { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
-    &.s-skip    { background: rgba(255, 255, 255, 0.07); color: #6b7280; }
+    &.s-done    { background: #dcfce7; color: #166534; }
+    &.s-error   { background: #fee2e2; color: #991b1b; }
+    &.s-running { background: #dbeafe; color: #1d4ed8; }
+    &.s-skip    { background: #eef1f8; color: #7c88a1; }
   }
 
   .step-output {
@@ -490,9 +489,9 @@ body,
     max-height: 120px;
     overflow-y: auto;
 
-    &.out-ok    { color: #4ec9b0; }
-    &.out-error { color: #f87171; }
-    &.out-info  { color: #9cdcfe; }
+    &.out-ok    { color: #15803d; }
+    &.out-error { color: #dc2626; }
+    &.out-info  { color: #1d4ed8; }
   }
 
   .step-skip-btn {
@@ -500,13 +499,13 @@ body,
     margin-top: 6px;
     font-size: 0.7rem;
     background: none;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid #dfe3ee;
     border-radius: 4px;
-    color: rgba(255, 255, 255, 0.45);
+    color: #7c88a1;
     padding: 3px 10px;
     cursor: pointer;
 
-    &:hover { border-color: rgba(255, 255, 255, 0.35); color: #e2e8f0; }
+    &:hover { border-color: #b7c6f2; color: #33415c; }
   }
 }
 
@@ -520,13 +519,13 @@ body,
 .wizard-back {
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(51, 65, 92, 0.45);
   font-size: 0.78rem;
   cursor: pointer;
   padding: 0;
   align-self: flex-start;
   margin-bottom: 16px;
 
-  &:hover { color: rgba(255, 255, 255, 0.7); }
+  &:hover { color: #33415c; }
 }
 
